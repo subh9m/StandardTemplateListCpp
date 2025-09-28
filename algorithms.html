@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ STL Algorithms Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0a0e1a;
+            --sidebar-bg: #1a1f2e;
+            --card-bg: #252b3d;
+            --border-color: #3d4458;
+            --text-color: #e2e8f0;
+            --header-color: #ffffff;
+            --primary-color: #60a5fa;
+            --secondary-color: #a78bfa;
+            --accent-color: #34d399;
+            --icon-color: #fbbf24;
+            --danger-color: #f87171;
+            --success-color: #22c55e;
+            --glow-primary: rgba(96, 165, 250, 0.3);
+            --glow-secondary: rgba(167, 139, 250, 0.3);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, var(--bg-color) 0%, #0f172a 100%);
+            color: var(--text-color);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, var(--sidebar-bg) 0%, #1e293b 100%);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+            transform: translateX(0); /* Default state is visible */
+        }
+        
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--header-color);
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+        }
+
+        .sidebar nav ul {
+            list-style-type: none;
+            padding: 10px 0;
+            margin: 0;
+        }
+
+        .sidebar nav li a {
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 12px 24px;
+            margin: 4px 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 4px solid transparent;
+            border-radius: 12px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sidebar nav li a .icon-container {
+            margin-right: 12px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar nav li a .icon-container svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .sidebar nav li a:hover {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: #fff;
+            transform: translateX(5px);
+            box-shadow: 0 8px 25px var(--glow-primary);
+        }
+
+        .sidebar nav li a:hover .icon-container {
+            transform: scale(1.2) rotate(10deg);
+        }
+        
+        .sidebar nav li a.active {
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.2), rgba(167, 139, 250, 0.2));
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            box-shadow: 0 4px 15px var(--glow-primary);
+        }
+
+        .main-content {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+            padding: 40px 50px;
+            background: radial-gradient(ellipse at top, rgba(167, 139, 250, 0.05) 0%, transparent 50%);
+            transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.collapsed + .main-content {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        .content-section {
+            padding-top: 40px;
+            margin-top: -20px;
+            margin-bottom: 50px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1, h2, h3 {
+            color: var(--header-color);
+            font-weight: 700;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px var(--glow-primary);
+        }
+        
+        h1 .section-icon {
+              width: 1em;
+              height: 1em;
+              display: inline-block;
+              vertical-align: middle;
+              margin-right: 0.2em;
+        }
+
+        h2 {
+            font-size: 2.2em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+            padding-bottom: 10px;
+            border-bottom: 2px solid transparent;
+            border-image: linear-gradient(90deg, var(--secondary-color), transparent) 1;
+            display: flex;
+            align-items: center;
+        }
+        
+        h2 .section-icon {
+            margin-right: 16px;
+            font-size: 1.2em;
+            width: 40px;
+            height: 40px;
+        }
+
+        h3 {
+            font-size: 1.6em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        h3 .icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+        }
+
+        h3::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--accent-color), var(--success-color));
+            border-radius: 2px;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, var(--card-bg) 0%, #2a3441 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border-color: var(--primary-color);
+        }
+        
+        .card ul {
+            padding-left: 24px;
+            margin: 0;
+        }
+        
+        .card li {
+            margin-bottom: 12px;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .card li:hover {
+            transform: translateX(5px);
+            color: var(--primary-color);
+        }
+        
+        .card li::marker {
+            color: var(--primary-color);
+        }
+        
+        .note-card {
+            background: linear-gradient(135deg, rgba(251, 191, 38, 0.1), rgba(251, 191, 38, 0.05));
+            border-left: 4px solid var(--icon-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(251, 191, 38, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .note-card::before {
+            content: '💡';
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5em;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { opacity: 0.5; transform: scale(1); }
+            to { opacity: 1; transform: scale(1.1); }
+        }
+
+        .note-card p {
+            margin: 0;
+        }
+        
+        .table-wrapper {
+             overflow-x: auto;
+             -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 25px;
+            background: linear-gradient(135deg, var(--card-bg) 0%, #2a3441 100%);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            min-width: 600px; /* Prevent table from squishing too much */
+        }
+
+        th, td {
+            text-align: left;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        tr:last-child td { 
+            border-bottom: none; 
+        }
+
+        thead tr {
+            background: linear-gradient(135deg, var(--sidebar-bg) 0%, #334155 100%);
+            color: var(--header-color);
+            font-weight: 600;
+        }
+
+        thead th {
+            position: relative;
+            font-size: 1.05em;
+        }
+
+        thead th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        thead tr:hover th::after {
+            opacity: 1;
+        }
+        
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:nth-child(even) { 
+            background: rgba(255, 255, 255, 0.02); 
+        }
+
+        tbody tr:hover {
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.1), rgba(167, 139, 250, 0.1));
+            transform: translateX(5px);
+            box-shadow: 5px 0 15px rgba(96, 165, 250, 0.2);
+        }
+
+        tbody tr:hover td {
+            color: var(--header-color);
+        }
+        
+        code, .code {
+            font-family: 'Fira Code', 'Courier New', monospace;
+            background: linear-gradient(135deg, var(--sidebar-bg), #1e293b);
+            color: var(--danger-color);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            border: 1px solid rgba(248, 113, 113, 0.2);
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        code:hover {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: #fff;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px var(--glow-secondary);
+        }
+        
+        .menu-toggle {
+            display: flex; /* Always visible */
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: 0 8px 25px rgba(96, 165, 250, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .menu-toggle:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 12px 35px rgba(96, 165, 250, 0.6);
+        }
+
+        .menu-toggle:active {
+            transform: scale(0.95);
+        }
+        
+        .quick-ref-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 30px;
+            margin-bottom: 2rem;
+        }
+        
+        .quick-ref-item {
+            background: linear-gradient(135deg, var(--card-bg) 0%, #334155 100%);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-ref-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .quick-ref-item:hover::before {
+            transform: scaleX(1);
+        }
+
+        .quick-ref-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(96, 165, 250, 0.3);
+            border-color: var(--primary-color);
+        }
+
+        .quick-ref-item .icon { 
+            width: 40px;
+            height: 40px;
+            margin-right: 20px;
+        }
+
+        .quick-ref-item a {
+             color: var(--primary-color); 
+             text-decoration: none;
+             font-weight: 600;
+             transition: color 0.2s ease;
+        }
+         .quick-ref-item a:hover {
+             color: var(--secondary-color);
+         }
+
+
+        /* Search Bar Styles */
+        .search-container {
+            margin-bottom: 40px;
+            position: sticky;
+            top: 0;
+            z-index: 990;
+            background: var(--bg-color);
+            padding: 20px 0;
+            margin-top: -40px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 1;
+            max-height: 120px; /* A reasonable max height for the animation */
+            overflow: visible; /* Allow dropdown to show */
+        }
+
+        .search-container.collapsed {
+            opacity: 0;
+            max-height: 0;
+            margin-bottom: 0;
+            padding: 0;
+            margin-top: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .search-wrapper {
+            position: relative;
+        }
+        .search-wrapper svg {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            stroke: var(--primary-color);
+            opacity: 0.6;
+        }
+        #searchBar {
+            width: 100%;
+            padding: 20px 20px 20px 60px;
+            font-size: 1.2em;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            background-color: var(--sidebar-bg);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-sizing: border-box;
+        }
+        #searchBar:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 25px var(--glow-primary);
+        }
+        .search-results {
+            display: none;
+            position: absolute;
+            width: 100%;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .search-result-item {
+            padding: 15px 20px;
+            color: var(--text-color);
+            text-decoration: none;
+            display: block;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+        .search-result-item:hover {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+
+        @media (max-width: 1024px) {
+            .main-content { 
+                width: 100%; 
+                padding: 30px; 
+            }
+            .search-container {
+                margin-top: -30px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content { 
+                padding: 20px; 
+            }
+            .search-container {
+                margin-top: -20px;
+            }
+            h1 { 
+                font-size: 2.2em; 
+            }
+            h2 { 
+                font-size: 1.8em; 
+            }
+            h3 { 
+                font-size: 1.4em; 
+            }
+            table { 
+                font-size: 0.9em; 
+            }
+            .quick-ref-grid { 
+                grid-template-columns: 1fr; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="menu-toggle" id="menuToggle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+    
+    <button class="menu-toggle" id="searchToggle" style="left: auto; right: 20px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    </button>
+
+    <div class="container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">STL Algorithms</div>
+            <nav id="sidebarNav"></nav>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+             <div class="search-container">
+                <div class="search-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="searchBar" placeholder="Search for an algorithm category...">
+                </div>
+                <div id="searchResults" class="search-results"></div>
+            </div>
+            <!-- Content will be injected by JavaScript -->
+        </main>
+    </div>
+
+    <script>
+        const ICONS = {
+            overview: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20v-2H6.5A2.5 2.5 0 0 1 4 12.5v-1A2.5 2.5 0 0 1 6.5 9H20V7H6.5A2.5 2.5 0 0 1 4 4.5v-1" /><style>@keyframes p { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); }} path { animation: p 2s infinite; }</style></svg>`,
+            algorithms: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/><style>@keyframes rot{from{transform:rotate(0deg)} to{transform:rotate(360deg)}} path, circle {animation: rot 8s linear infinite; transform-origin: center;}</style></svg>`,
+            quick_ref: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/><style>@keyframes fl{0%{opacity:0.2} 50%{opacity:1} 100%{opacity:0.2}} path{animation: fl 1.5s infinite;}</style></svg>`,
+            search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><style>@keyframes p{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}} circle,line{animation:p 2s infinite;transform-origin:center}</style></svg>`,
+            modify: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a1 1 0 0 0-1.4-1.4l-1.6-1.6a1 1 0 0 0-1.4 0zM12 12l-2-2-7 7 4 4 7-7-2-2z"/><style>@keyframes r{from{transform:rotate(-5deg)}to{transform:rotate(5deg)}} path{animation:r 2s infinite alternate;transform-origin:center}</style></svg>`,
+            partition: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"></line><line x1="3" y1="12" x2="21" y2="12"></line><style>@keyframes s{from{transform:scale(0.95)}to{transform:scale(1.05)}} line{animation:s 2s infinite alternate;transform-origin:center}</style></svg>`,
+            heap: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10.54V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h8.54"/><path d="M16 22l-4-4 4-4"/><path d="M20 14h-4"/><style>@keyframes f{0%{opacity:.3}50%{opacity:1}100%{opacity:.3}} path{animation:f 3s infinite}</style></svg>`,
+            minmax: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17l-5-5-4 4-3-3"/><style>@keyframes u{0%{transform:translateY(0)}50%{transform:translateY(-2px)}100%{transform:translateY(0)}} path:nth-child(2){animation:u 2s infinite}</style></svg>`,
+            set_ops: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"/><style>@keyframes k{from{transform:translateY(0)}to{transform:translateY(-1px)}} path{animation:k 1.5s infinite alternate}</style></svg>`,
+            numeric: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 4 16.25"/><path d="M8 16a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm4-10a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/><path d="M12 18a6 6 0 0 0 6-6h-6v6z"/><style>@keyframes r{from{transform:rotate(0deg)}to{transform:rotate(360deg)}} path:nth-child(1){animation:r 10s linear infinite;transform-origin:center}</style></svg>`,
+            info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line><style>@keyframes p{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}} circle,line{animation:p 2s infinite;transform-origin:center}</style></svg>`,
+            sort: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18M3 8h12M3 12h8M3 16h4M3 20h2"/><style>@keyframes m{from{transform:translateX(0)}to{transform:translateX(1px)}} path{animation:m 1s infinite alternate}</style></svg>`,
+            back_arrow: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>`
+        };
+
+        const algorithmContent = { 
+            id: "algorithms", title: "STL Algorithms", icon: ICONS.algorithms,
+            content: `
+                    <section id="algorithms-overview" class="content-section">
+                        <h1><span class="section-icon">${ICONS.algorithms}</span>STL Algorithms Reference</h1>
+                        <div class="note-card">
+                            <p><strong>Comprehensive Reference:</strong> This section covers all major C++ STL algorithms from &lt;algorithm&gt;, &lt;numeric&gt;, and newer C++17/C++20 additions. Each algorithm includes syntax, container compatibility, and practical examples.</p>
+                        </div>
+
+                        <div class="quick-ref-grid">
+                            <div class="quick-ref-item"><span class="icon">${ICONS.search}</span><div><strong><a href="#non-modifying">Non-Modifying:</a></strong> Search, count, compare operations</div></div>
+                            <div class="quick-ref-item"><span class="icon">${ICONS.modify}</span><div><strong><a href="#modifying">Modifying:</a></strong> Copy, transform, replace operations</div></div>
+                            <div class="quick-ref-item"><span class="icon">${ICONS.partition}</span><div><strong><a href="#partitioning">Partitioning:</a></strong> Divide elements by criteria</div></div>
+                            <div class="quick-ref-item"><span class="icon">${ICONS.sort}</span><div><strong><a href="#sorting">Sorting:</a></strong> Sort and binary search operations</div></div>
+                            <div class="quick-ref-item"><span class="icon">${ICONS.heap}</span><div><strong><a href="#heap">Heap:</a></strong> Heap structure operations</div></div>
+                            <div class="quick-ref-item"><span class="icon">${ICONS.minmax}</span><div><strong><a href="#min-max">Min/Max:</a></strong> Find extremes and clamp values</div></div>
+                            <div class="quick-ref-item"><span class="icon">${ICONS.set_ops}</span><div><strong><a href="#set-ops">Set Operations:</a></strong> Union, intersection, difference</div></div>
+                            <div class="quick-ref-item"><span class="icon">${ICONS.numeric}</span><div><strong><a href="#numeric">Numeric:</a></strong> Mathematical and accumulation</div></div>
+                        </div>
+                    </section>
+
+                    <section id="non-modifying" class="content-section">
+                        <h3><span class="icon">${ICONS.search}</span>Non-Modifying Sequence Operations</h3>
+                        <div class="card"><div class="table-wrapper">
+                            <table>
+                                <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
+                                <tbody>
+                                    <tr><td><code>for_each</code></td><td>Apply function to each element</td><td><code>for_each(first, last, func)</code></td><td><code>for_each(v.begin(), v.end(), [](int x){...});</code></td></tr>
+                                    <tr><td><code>find</code></td><td>Find first occurrence of value</td><td><code>find(first, last, value)</code></td><td><code>auto it = find(v.begin(), v.end(), 42);</code></td></tr>
+                                    <tr><td><code>find_if</code></td><td>Find first element satisfying predicate</td><td><code>find_if(first, last, pred)</code></td><td><code>find_if(v.begin(), v.end(), is_even);</code></td></tr>
+                                    <tr><td><code>find_if_not</code></td><td>Find first element NOT satisfying predicate</td><td><code>find_if_not(first, last, pred)</code></td><td><code>find_if_not(v.begin(), v.end(), is_positive);</code></td></tr>
+                                    <tr><td><code>count</code></td><td>Count occurrences of value</td><td><code>count(first, last, value)</code></td><td><code>int c = count(v.begin(), v.end(), 5);</code></td></tr>
+                                    <tr><td><code>count_if</code></td><td>Count elements satisfying predicate</td><td><code>count_if(first, last, pred)</code></td><td><code>count_if(v.begin(), v.end(), is_positive);</code></td></tr>
+                                    <tr><td><code>all_of</code></td><td>Test if predicate is true for all</td><td><code>all_of(first, last, pred)</code></td><td><code>all_of(v.begin(), v.end(), is_positive);</code></td></tr>
+                                    <tr><td><code>any_of</code></td><td>Test if predicate is true for any</td><td><code>any_of(first, last, pred)</code></td><td><code>any_of(v.begin(), v.end(), is_negative);</code></td></tr>
+                                    <tr><td><code>none_of</code></td><td>Test if predicate is false for all</td><td><code>none_of(first, last, pred)</code></td><td><code>none_of(v.begin(), v.end(), is_zero);</code></td></tr>
+                                    <tr><td><code>search</code></td><td>Find first occurrence of subsequence</td><td><code>search(f1, l1, f2, l2)</code></td><td><code>search(text.begin(), text.end(), pat.begin(), pat.end());</code></td></tr>
+                                    <tr><td><code>equal</code></td><td>Check if two ranges are equal</td><td><code>equal(f1, l1, f2)</code></td><td><code>equal(v1.begin(), v1.end(), v2.begin());</code></td></tr>
+                                </tbody>
+                            </table>
+                        </div></div>
+                    </section>
+
+                    <section id="modifying" class="content-section">
+                        <h3><span class="icon">${ICONS.modify}</span>Modifying Sequence Operations</h3>
+                        <div class="card"><div class="table-wrapper">
+                            <table>
+                                <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
+                                <tbody>
+                                    <tr><td><code>copy</code></td><td>Copy elements to destination</td><td><code>copy(first, last, dest)</code></td><td><code>copy(src.begin(), src.end(), dest.begin());</code></td></tr>
+                                    <tr><td><code>copy_if</code></td><td>Copy elements satisfying predicate</td><td><code>copy_if(f, l, dest, pred)</code></td><td><code>copy_if(s.begin(), s.end(), back_inserter(d), is_pos);</code></td></tr>
+                                    <tr><td><code>move</code></td><td>Move elements to destination</td><td><code>move(first, last, dest)</code></td><td><code>move(src.begin(), src.end(), dest.begin());</code></td></tr>
+                                    <tr><td><code>fill</code></td><td>Fill range with value</td><td><code>fill(first, last, value)</code></td><td><code>fill(v.begin(), v.end(), 42);</code></td></tr>
+                                    <tr><td><code>fill_n</code></td><td>Fill n elements with value</td><td><code>fill_n(first, n, value)</code></td><td><code>fill_n(v.begin(), 5, 0);</code></td></tr>
+                                    <tr><td><code>transform</code></td><td>Apply function and store result</td><td><code>transform(f, l, dest, func)</code></td><td><code>transform(v.begin(), v.end(), v.begin(), dbl);</code></td></tr>
+                                    <tr><td><code>replace</code></td><td>Replace occurrences of old_value</td><td><code>replace(f, l, old, new)</code></td><td><code>replace(v.begin(), v.end(), 5, 10);</code></td></tr>
+                                    <tr><td><code>replace_if</code></td><td>Replace elements satisfying predicate</td><td><code>replace_if(f, l, pred, new)</code></td><td><code>replace_if(v.begin(), v.end(), is_neg, 0);</code></td></tr>
+                                    <tr><td><code>remove</code></td><td>Remove elements equal to value</td><td><code>remove(first, last, value)</code></td><td><code>v.erase(remove(v.begin(), v.end(), 42), v.end());</code></td></tr>
+                                    <tr><td><code>remove_if</code></td><td>Remove elements satisfying predicate</td><td><code>remove_if(first, last, pred)</code></td><td><code>v.erase(remove_if(v.begin(), v.end(), is_neg), v.end());</code></td></tr>
+                                    <tr><td><code>unique</code></td><td>Remove consecutive duplicates</td><td><code>unique(first, last)</code></td><td><code>v.erase(unique(v.begin(), v.end()), v.end());</code></td></tr>
+                                    <tr><td><code>reverse</code></td><td>Reverse order of elements</td><td><code>reverse(first, last)</code></td><td><code>reverse(v.begin(), v.end());</code></td></tr>
+                                    <tr><td><code>rotate</code></td><td>Rotate elements in range</td><td><code>rotate(first, middle, last)</code></td><td><code>rotate(v.begin(), v.begin()+3, v.end());</code></td></tr>
+                                    <tr><td><code>shuffle</code></td><td>Randomly shuffle elements</td><td><code>shuffle(first, last, rng)</code></td><td><code>shuffle(v.begin(), v.end(), rng);</code></td></tr>
+                                </tbody>
+                            </table>
+                        </div></div>
+                    </section>
+
+                    <section id="partitioning" class="content-section">
+                        <h3><span class="icon">${ICONS.partition}</span>Partitioning Operations</h3>
+                        <div class="card"><div class="table-wrapper">
+                            <table>
+                                <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
+                                <tbody>
+                                    <tr><td><code>partition</code></td><td>Partition range by predicate (not stable)</td><td><code>partition(f, l, pred)</code></td><td><code>partition(v.begin(), v.end(), is_pos);</code></td></tr>
+                                    <tr><td><code>stable_partition</code></td><td>Partition while preserving order</td><td><code>stable_partition(f, l, pred)</code></td><td><code>stable_partition(v.begin(), v.end(), is_even);</code></td></tr>
+                                    <tr><td><code>is_partitioned</code></td><td>Test if range is partitioned</td><td><code>is_partitioned(f, l, pred)</code></td><td><code>is_partitioned(v.begin(), v.end(), is_pos);</code></td></tr>
+                                    <tr><td><code>partition_point</code></td><td>Find partition point</td><td><code>partition_point(f, l, pred)</code></td><td><code>partition_point(v.begin(), v.end(), is_pos);</code></td></tr>
+                                </tbody>
+                            </table>
+                        </div></div>
+                    </section>
+
+                    <section id="sorting" class="content-section">
+                        <h3><span class="icon">${ICONS.sort}</span>Sorting and Binary Search</h3>
+                        <div class="card"><div class="table-wrapper">
+                            <table>
+                                <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
+                                <tbody>
+                                    <tr><td><code>sort</code></td><td>Sort elements (not stable)</td><td><code>sort(first, last [, comp])</code></td><td><code>sort(v.begin(), v.end(), greater<int>());</code></td></tr>
+                                    <tr><td><code>stable_sort</code></td><td>Sort while preserving equal order</td><td><code>stable_sort(f, l [, comp])</code></td><td><code>stable_sort(s.begin(), s.end(), comp_grade);</code></td></tr>
+                                    <tr><td><code>partial_sort</code></td><td>Partially sort (first n elements)</td><td><code>partial_sort(f, m, l)</code></td><td><code>partial_sort(v.begin(), v.begin()+5, v.end());</code></td></tr>
+                                    <tr><td><code>nth_element</code></td><td>Find nth element in sorted order</td><td><code>nth_element(f, nth, l)</code></td><td><code>nth_element(v.begin(), v.begin() + v.size()/2, v.end());</code></td></tr>
+                                    <tr><td><code>binary_search</code></td><td>Test if value exists in sorted range</td><td><code>binary_search(f, l, val)</code></td><td><code>binary_search(v.begin(), v.end(), 42);</code></td></tr>
+                                    <tr><td><code>lower_bound</code></td><td>Find insertion point</td><td><code>lower_bound(f, l, val)</code></td><td><code>lower_bound(v.begin(), v.end(), 42);</code></td></tr>
+                                    <tr><td><code>upper_bound</code></td><td>Find position after last occurrence</td><td><code>upper_bound(f, l, val)</code></td><td><code>upper_bound(v.begin(), v.end(), 42);</code></td></tr>
+                                    <tr><td><code>equal_range</code></td><td>Find range of equal elements</td><td><code>equal_range(f, l, val)</code></td><td><code>auto p = equal_range(v.begin(), v.end(), 42);</code></td></tr>
+                                    <tr><td><code>is_sorted</code></td><td>Check if range is sorted</td><td><code>is_sorted(first, last)</code></td><td><code>is_sorted(v.begin(), v.end());</code></td></tr>
+                                </tbody>
+                            </table>
+                        </div></div>
+                    </section>
+
+                    <section id="heap" class="content-section">
+                        <h3><span class="icon">${ICONS.heap}</span>Heap Operations</h3>
+                        <div class="card"><div class="table-wrapper">
+                            <table>
+                                <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
+                                <tbody>
+                                    <tr><td><code>make_heap</code></td><td>Create heap from range</td><td><code>make_heap(first, last)</code></td><td><code>make_heap(v.begin(), v.end());</code></td></tr>
+                                    <tr><td><code>push_heap</code></td><td>Insert element into heap</td><td><code>push_heap(first, last)</code></td><td><code>v.push_back(42); push_heap(v.begin(), v.end());</code></td></tr>
+                                    <tr><td><code>pop_heap</code></td><td>Remove largest element from heap</td><td><code>pop_heap(first, last)</code></td><td><code>pop_heap(v.begin(), v.end()); v.pop_back();</code></td></tr>
+                                    <tr><td><code>sort_heap</code></td><td>Sort heap (destroys heap property)</td><td><code>sort_heap(first, last)</code></td><td><code>sort_heap(v.begin(), v.end());</code></td></tr>
+                                    <tr><td><code>is_heap</code></td><td>Check if range is a heap</td><td><code>is_heap(first, last)</code></td><td><code>is_heap(v.begin(), v.end());</code></td></tr>
+                                </tbody>
+                            </table>
+                        </div></div>
+                    </section>
+
+                    <section id="min-max" class="content-section">
+                        <h3><span class="icon">${ICONS.minmax}</span>Min/Max Operations</h3>
+                        <div class="card"><div class="table-wrapper">
+                            <table>
+                                <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
+                                <tbody>
+                                    <tr><td><code>min</code></td><td>Return smaller of two values</td><td><code>min(a, b)</code></td><td><code>int s = min(5, 10);</code></td></tr>
+                                    <tr><td><code>max</code></td><td>Return larger of two values</td><td><code>max(a, b)</code></td><td><code>int l = max(5, 10);</code></td></tr>
+                                    <tr><td><code>minmax</code></td><td>Return pair of min and max</td><td><code>minmax(a, b)</code></td><td><code>auto p = minmax(5, 10);</code></td></tr>
+                                    <tr><td><code>min_element</code></td><td>Find iterator to smallest element</td><td><code>min_element(first, last)</code></td><td><code>min_element(v.begin(), v.end());</code></td></tr>
+                                    <tr><td><code>max_element</code></td><td>Find iterator to largest element</td><td><code>max_element(first, last)</code></td><td><code>max_element(v.begin(), v.end());</code></td></tr>
+                                    <tr><td><code>minmax_element</code></td><td>Find both min and max elements</td><td><code>minmax_element(first, last)</code></td><td><code>auto p = minmax_element(v.begin(), v.end());</code></td></tr>
+                                    <tr><td><code>clamp</code></td><td>Clamp value between bounds (C++17)</td><td><code>clamp(val, lo, hi)</code></td><td><code>int c = clamp(x, 0, 100);</code></td></tr>
+                                </tbody>
+                            </table>
+                        </div></div>
+                    </section>
+
+                    <section id="set-ops" class="content-section">
+                        <h3><span class="icon">${ICONS.set_ops}</span>Set Operations (on Sorted Ranges)</h3>
+                        <div class="card"><div class="table-wrapper">
+                            <table>
+                                <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
+                                <tbody>
+                                    <tr><td><code>set_union</code></td><td>Compute union of sorted ranges</td><td><code>set_union(f1,l1,f2,l2,dest)</code></td><td><code>set_union(s1.begin(), s1.end(), s2.begin(), s2.end(), back_inserter(res));</code></td></tr>
+                                    <tr><td><code>set_intersection</code></td><td>Compute intersection of sorted ranges</td><td><code>set_intersection(f1,l1,f2,l2,dest)</code></td><td><code>set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), back_inserter(com));</code></td></tr>
+                                    <tr><td><code>set_difference</code></td><td>Compute difference of sorted ranges</td><td><code>set_difference(f1,l1,f2,l2,dest)</code></td><td><code>set_difference(s1.begin(), s1.end(), s2.begin(), s2.end(), back_inserter(diff));</code></td></tr>
+                                    <tr><td><code>includes</code></td><td>Test if one sorted range includes another</td><td><code>includes(f1, l1, f2, l2)</code></td><td><code>includes(s1.begin(), s1.end(), s2.begin(), s2.end());</code></td></tr>
+                                </tbody>
+                            </table>
+                        </div></div>
+                    </section>
+
+                    <section id="numeric" class="content-section">
+                        <h3><span class="icon">${ICONS.numeric}</span>Numeric Algorithms</h3>
+                        <div class="card"><div class="table-wrapper">
+                            <table>
+                                <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
+                                <tbody>
+                                    <tr><td><code>accumulate</code></td><td>Compute sum or fold of range</td><td><code>accumulate(f, l, init [, op])</code></td><td><code>int sum = accumulate(v.begin(), v.end(), 0);</code></td></tr>
+                                    <tr><td><code>reduce</code></td><td>Parallel friendly reduction (C++17)</td><td><code>reduce(f, l [, init] [, op])</code></td><td><code>int sum = reduce(v.begin(), v.end());</code></td></tr>
+                                    <tr><td><code>inner_product</code></td><td>Compute inner product of ranges</td><td><code>inner_product(f1, l1, f2, init)</code></td><td><code>int dot = inner_product(v1.begin(), v1.end(), v2.begin(), 0);</code></td></tr>
+                                    <tr><td><code>partial_sum</code></td><td>Compute partial sums</td><td><code>partial_sum(first, last, dest)</code></td><td><code>partial_sum(v.begin(), v.end(), back_inserter(p));</code></td></tr>
+                                    <tr><td><code>iota</code></td><td>Fill range with successive increments</td><td><code>iota(first, last, value)</code></td><td><code>iota(v.begin(), v.end(), 1);</code></td></tr>
+                                    <tr><td><code>gcd</code></td><td>Greatest common divisor (C++17)</td><td><code>gcd(a, b)</code></td><td><code>int g = gcd(48, 18);</code></td></tr>
+                                    <tr><td><code>lcm</code></td><td>Least common multiple (C++17)</td><td><code>lcm(a, b)</code></td><td><code>int l = lcm(12, 18);</code></td></tr>
+                                </tbody>
+                            </table>
+                        </div></div>
+                    </section>
+                    <div class="note-card" style="margin-top: 2rem;">
+                        <p><strong>Key Algorithm Notes:</strong></p>
+                        <ul>
+                            <li><strong>Erase-Remove Idiom:</strong> <code>remove</code> and <code>remove_if</code> don't actually erase elements. Use <code>v.erase(remove(...), v.end())</code></li>
+                            <li><strong>Iterator Requirements:</strong> RandomAccess (vector, deque, array) > Bidirectional (list, set, map) > Forward (forward_list) > Input (all containers)</li>
+                            <li><strong>C++17 Features:</strong> <code>reduce</code>, <code>clamp</code>, <code>gcd</code>, <code>lcm</code>, and execution policies for parallel algorithms</li>
+                            <li><strong>C++20 Ranges:</strong> <code>ranges::sort</code>, <code>ranges::find</code>, etc. provide cleaner syntax and better composability</li>
+                            <li><strong>Performance:</strong> Prefer member functions over generic algorithms for associative containers (e.g., <code>set.find()</code> vs <code>find()</code>)</li>
+                        </ul>
+                    </div>
+            `
+        };
+
+        // Data for the sidebar navigation on this page
+        const navData = [
+            { id: "back", title: "Back to Main Guide", icon: ICONS.back_arrow, href: 'index.html'},
+            { id: "algorithms-overview", title: "Overview", icon: ICONS.algorithms },
+            { id: "non-modifying", title: "Non-Modifying", icon: ICONS.search },
+            { id: "modifying", title: "Modifying", icon: ICONS.modify },
+            { id: "partitioning", title: "Partitioning", icon: ICONS.partition },
+            { id: "sorting", title: "Sorting", icon: ICONS.sort },
+            { id: "heap", title: "Heap", icon: ICONS.heap },
+            { id: "min-max", title: "Min/Max", icon: ICONS.minmax },
+            { id: "set-ops", title: "Set Operations", icon: ICONS.set_ops },
+            { id: "numeric", title: "Numeric", icon: ICONS.numeric }
+        ];
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const mainContent = document.getElementById('mainContent');
+            const sidebarNav = document.getElementById('sidebarNav');
+            
+            // Populate main content
+            mainContent.insertAdjacentHTML('beforeend', algorithmContent.content);
+
+            // Populate sidebar navigation
+            const navUl = document.createElement('ul');
+            navData.forEach(item => {
+                const li = document.createElement('li');
+                const href = item.href ? item.href : `#${item.id}`;
+                li.innerHTML = `<a href="${href}"><span class="icon-container">${item.icon}</span>${item.title}</a>`;
+                navUl.appendChild(li);
+            });
+            sidebarNav.appendChild(navUl);
+            
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const searchBar = document.getElementById('searchBar');
+            const searchResults = document.getElementById('searchResults');
+            const searchToggle = document.getElementById('searchToggle');
+            const searchContainer = document.querySelector('.search-container');
+
+            let isMobile = window.innerWidth <= 1024;
+
+            const setInitialLayoutState = () => {
+                if (isMobile) {
+                    sidebar.classList.add('collapsed');
+                    searchContainer.classList.add('collapsed');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    searchContainer.classList.remove('collapsed');
+                }
+            };
+            
+            setInitialLayoutState();
+
+            window.addEventListener('resize', () => {
+                const newIsMobile = window.innerWidth <= 1024;
+                if (newIsMobile !== isMobile) {
+                    isMobile = newIsMobile;
+                    setInitialLayoutState();
+                }
+            });
+
+            menuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.classList.toggle('collapsed');
+            });
+
+            searchToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                searchContainer.classList.toggle('collapsed');
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!searchBar.contains(e.target)) searchResults.style.display = 'none';
+                if (isMobile && !sidebar.classList.contains('collapsed') && !sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                    sidebar.classList.add('collapsed');
+                }
+            });
+            
+            sidebarNav.addEventListener('click', (e) => {
+                if (e.target.closest('a') && isMobile && !e.target.closest('a').href.includes('index.html')) {
+                    sidebar.classList.add('collapsed');
+                 }
+            });
+
+            searchBar.addEventListener('input', () => {
+                const query = searchBar.value.toLowerCase().trim();
+                searchResults.innerHTML = '';
+                if (query) {
+                    const filtered = navData.filter(item => item.id !== 'back' && item.title.toLowerCase().includes(query));
+                    if (filtered.length > 0) {
+                        filtered.forEach(item => {
+                            const resultItem = document.createElement('a');
+                            resultItem.href = `#${item.id}`;
+                            resultItem.textContent = item.title;
+                            resultItem.classList.add('search-result-item');
+                            resultItem.addEventListener('click', () => {
+                                searchResults.style.display = 'none';
+                                searchBar.value = '';
+                                if(isMobile) sidebar.classList.add('collapsed');
+                            });
+                            searchResults.appendChild(resultItem);
+                        });
+                        searchResults.style.display = 'block';
+                    } else {
+                        searchResults.style.display = 'none';
+                    }
+                } else {
+                    searchResults.style.display = 'none';
+                }
+            });
+
+            const sections = document.querySelectorAll('.content-section');
+            const navLinks = document.querySelectorAll('#sidebarNav a');
+
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        const navLink = document.querySelector(`#sidebarNav a[href="#${id}"]`);
+                        navLinks.forEach(link => link.classList.remove('active'));
+                        if (navLink) {
+                           navLink.classList.add('active');
+                        }
+                    }
+                });
+            }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+
+            sections.forEach(section => observer.observe(section));
+            
+             // Set the first link as active by default
+            const firstLink = document.querySelector('#sidebarNav a[href="#algorithms-overview"]');
+            if(firstLink) firstLink.classList.add('active');
+        });
+    </script>
+</body>
+</html>
+

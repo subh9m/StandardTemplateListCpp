@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ String Functions Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0a0e1a;
+            --sidebar-bg: #1a1f2e;
+            --card-bg: #252b3d;
+            --border-color: #3d4458;
+            --text-color: #e2e8f0;
+            --header-color: #ffffff;
+            --primary-color: #60a5fa;
+            --secondary-color: #a78bfa;
+            --accent-color: #34d399;
+            --icon-color: #fbbf24;
+            --danger-color: #f87171;
+            --success-color: #22c55e;
+            --glow-primary: rgba(96, 165, 250, 0.3);
+            --glow-secondary: rgba(167, 139, 250, 0.3);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, var(--bg-color) 0%, #0f172a 100%);
+            color: var(--text-color);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, var(--sidebar-bg) 0%, #1e293b 100%);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+            transform: translateX(0);
+        }
+        
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--header-color);
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+        }
+
+        .sidebar nav ul {
+            list-style-type: none;
+            padding: 10px 0;
+            margin: 0;
+        }
+
+        .sidebar nav li a {
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 12px 24px;
+            margin: 4px 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 4px solid transparent;
+            border-radius: 12px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sidebar nav li a .icon-container {
+            margin-right: 12px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar nav li a .icon-container svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .sidebar nav li a:hover {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: #fff;
+            transform: translateX(5px);
+            box-shadow: 0 8px 25px var(--glow-primary);
+        }
+
+        .sidebar nav li a:hover .icon-container {
+            transform: scale(1.2) rotate(10deg);
+        }
+        
+        .sidebar nav li a.active {
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.2), rgba(167, 139, 250, 0.2));
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            box-shadow: 0 4px 15px var(--glow-primary);
+        }
+
+        .main-content {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+            padding: 40px 50px;
+            background: radial-gradient(ellipse at top, rgba(96, 165, 250, 0.05) 0%, transparent 50%);
+            transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.collapsed + .main-content {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        .content-section {
+            padding-top: 40px;
+            margin-top: -20px;
+            margin-bottom: 50px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1, h2 {
+            color: var(--header-color);
+            font-weight: 700;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px var(--glow-primary);
+        }
+
+        h2 {
+            font-size: 1.8em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+            padding-bottom: 10px;
+            border-bottom: 2px solid transparent;
+            border-image: linear-gradient(90deg, var(--secondary-color), transparent) 1;
+        }
+
+        .table-wrapper {
+             overflow-x: auto;
+             -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 25px;
+            background: linear-gradient(135deg, var(--card-bg) 0%, #2a3441 100%);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            min-width: 800px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        tr:last-child td { 
+            border-bottom: none; 
+        }
+
+        thead tr {
+            background: linear-gradient(135deg, var(--sidebar-bg) 0%, #334155 100%);
+            color: var(--header-color);
+            font-weight: 600;
+        }
+        
+        tbody tr:hover {
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.1), rgba(167, 139, 250, 0.1));
+        }
+
+        tbody tr:hover td {
+            color: var(--header-color);
+        }
+        
+        code {
+            font-family: 'Fira Code', 'Courier New', monospace;
+            background: linear-gradient(135deg, var(--sidebar-bg), #1e293b);
+            color: #fca5a5;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            border: 1px solid rgba(248, 113, 113, 0.2);
+        }
+
+        .menu-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: 0 8px 25px rgba(96, 165, 250, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @media (max-width: 1024px) {
+            .main-content { 
+                width: 100%; 
+                margin-left: 0;
+                padding: 30px; 
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content { 
+                padding: 20px; 
+            }
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            table { font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="menu-toggle" id="menuToggle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+    
+    <div class="container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">C++ STL Guide</div>
+            <nav id="sidebarNav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <section class="content-section">
+                <h1>Complete C++ String Functions Reference</h1>
+
+                <h2>std::string Member Functions</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Function</th><th>Syntax</th><th>Description</th><th>Example Usage</th></tr></thead>
+                        <tbody>
+                            <tr><td>Constructor</td><td><code>string()</code>, <code>string(const char*)</code>, <code>string(size_t n, char c)</code></td><td>Creates string objects</td><td><code>string s1; string s2("Hello"); string s3(5, 'A');</code></td></tr>
+                            <tr><td>assign</td><td><code>s.assign(str)</code>, <code>s.assign(str, pos, len)</code>, <code>s.assign(n, c)</code></td><td>Assigns new content to string</td><td><code>s.assign("World");</code></td></tr>
+                            <tr><td>at</td><td><code>s.at(pos)</code></td><td>Access character with bounds checking</td><td><code>char c = s.at(0);</code></td></tr>
+                            <tr><td>back</td><td><code>s.back()</code></td><td>Access last character</td><td><code>char last = s.back();</code></td></tr>
+                            <tr><td>begin</td><td><code>s.begin()</code></td><td>Returns iterator to beginning</td><td><code>auto it = s.begin();</code></td></tr>
+                            <tr><td>c_str</td><td><code>s.c_str()</code></td><td>Returns C-style string</td><td><code>const char* cstr = s.c_str();</code></td></tr>
+                            <tr><td>capacity</td><td><code>s.capacity()</code></td><td>Returns allocated storage capacity</td><td><code>size_t cap = s.capacity();</code></td></tr>
+                            <tr><td>clear</td><td><code>s.clear()</code></td><td>Clears content</td><td><code>s.clear();</code></td></tr>
+                            <tr><td>compare</td><td><code>s.compare(str)</code>, <code>s.compare(pos, len, str)</code></td><td>Compares strings</td><td><code>int result = s.compare("test");</code></td></tr>
+                            <tr><td>copy</td><td><code>s.copy(buffer, len, pos)</code></td><td>Copy substring to character array</td><td><code>char buf[6]; s.copy(buf, 5, 0);</code></td></tr>
+                            <tr><td>data</td><td><code>s.data()</code></td><td>Returns pointer to character array</td><td><code>const char* ptr = s.data();</code></td></tr>
+                            <tr><td>empty</td><td><code>s.empty()</code></td><td>Checks if string is empty</td><td><code>if (s.empty()) { ... }</code></td></tr>
+                            <tr><td>end</td><td><code>s.end()</code></td><td>Returns iterator to end</td><td><code>auto it = s.end();</code></td></tr>
+                            <tr><td>erase</td><td><code>s.erase(pos, len)</code>, <code>s.erase(it)</code></td><td>Erases part of string</td><td><code>s.erase(2, 3);</code></td></tr>
+                            <tr><td>find</td><td><code>s.find(str, pos)</code>, <code>s.find(c, pos)</code></td><td>Finds first occurrence</td><td><code>size_t pos = s.find("sub");</code></td></tr>
+                            <tr><td>find_first_of</td><td><code>s.find_first_of(chars, pos)</code></td><td>Finds first character matching any</td><td><code>pos = s.find_first_of("aeiou");</code></td></tr>
+                            <tr><td>find_first_not_of</td><td><code>s.find_first_not_of(chars, pos)</code></td><td>Finds first character not matching any</td><td><code>pos = s.find_first_not_of(" \t");</code></td></tr>
+                            <tr><td>find_last_of</td><td><code>s.find_last_of(chars, pos)</code></td><td>Finds last character matching any</td><td><code>pos = s.find_last_of("aeiou");</code></td></tr>
+                            <tr><td>find_last_not_of</td><td><code>s.find_last_not_of(chars, pos)</code></td><td>Finds last character not matching any</td><td><code>pos = s.find_last_not_of(" \t");</code></td></tr>
+                            <tr><td>front</td><td><code>s.front()</code></td><td>Access first character</td><td><code>char first = s.front();</code></td></tr>
+                            <tr><td>get_allocator</td><td><code>s.get_allocator()</code></td><td>Returns allocator object</td><td><code>auto alloc = s.get_allocator();</code></td></tr>
+                            <tr><td>insert</td><td><code>s.insert(pos, str)</code>, <code>s.insert(pos, n, c)</code></td><td>Inserts characters</td><td><code>s.insert(3, "XXX");</code></td></tr>
+                            <tr><td>length</td><td><code>s.length()</code></td><td>Returns string length</td><td><code>size_t len = s.length();</code></td></tr>
+                            <tr><td>max_size</td><td><code>s.max_size()</code></td><td>Returns maximum possible length</td><td><code>size_t max = s.max_size();</code></td></tr>
+                            <tr><td>pop_back</td><td><code>s.pop_back()</code></td><td>Removes last character</td><td><code>s.pop_back();</code></td></tr>
+                            <tr><td>push_back</td><td><code>s.push_back(c)</code></td><td>Appends character</td><td><code>s.push_back('X');</code></td></tr>
+                            <tr><td>replace</td><td><code>s.replace(pos, len, str)</code>, <code>s.replace(it1, it2, str)</code></td><td>Replaces part of string</td><td><code>s.replace(2, 3, "NEW");</code></td></tr>
+                            <tr><td>reserve</td><td><code>s.reserve(n)</code></td><td>Requests capacity change</td><td><code>s.reserve(100);</code></td></tr>
+                            <tr><td>resize</td><td><code>s.resize(n)</code>, <code>s.resize(n, c)</code></td><td>Changes string size</td><td><code>s.resize(10, 'X');</code></td></tr>
+                            <tr><td>rfind</td><td><code>s.rfind(str, pos)</code>, <code>s.rfind(c, pos)</code></td><td>Finds last occurrence</td><td><code>pos = s.rfind("sub");</code></td></tr>
+                            <tr><td>shrink_to_fit</td><td><code>s.shrink_to_fit()</code></td><td>Shrinks capacity to fit size</td><td><code>s.shrink_to_fit();</code></td></tr>
+                            <tr><td>size</td><td><code>s.size()</code></td><td>Returns string length</td><td><code>size_t sz = s.size();</code></td></tr>
+                            <tr><td>substr</td><td><code>s.substr(pos, len)</code></td><td>Returns substring</td><td><code>string sub = s.substr(2, 5);</code></td></tr>
+                            <tr><td>swap</td><td><code>s.swap(str)</code></td><td>Swaps string contents</td><td><code>s.swap(other_string);</code></td></tr>
+                            <tr><td>operator[]</td><td><code>s[pos]</code></td><td>Access character (no bounds check)</td><td><code>char c = s[0];</code></td></tr>
+                            <tr><td>operator=</td><td><code>s = str</code>, <code>s = "literal"</code>, <code>s = c</code></td><td>Assignment operators</td><td><code>s = "Hello";</code></td></tr>
+                            <tr><td>operator+=</td><td><code>s += str</code>, <code>s += "literal"</code>, <code>s += c</code></td><td>Append operators</td><td><code>s += "World";</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Non-member Functions (std::string)</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Function</th><th>Syntax</th><th>Description</th><th>Example Usage</th></tr></thead>
+                        <tbody>
+                            <tr><td>operator+</td><td><code>str1 + str2</code>, <code>str + "lit"</code>, <code>"lit" + str</code></td><td>String concatenation</td><td><code>string result = s1 + s2;</code></td></tr>
+                            <tr><td>Relational Ops</td><td><code>==</code>, <code>!=</code>, <code><</code>, <code><=</code>, <code>></code>, <code>>=</code></td><td>Comparison operators</td><td><code>if (s1 == s2) { ... }</code></td></tr>
+                            <tr><td>getline</td><td><code>getline(stream, str, delim)</code></td><td>Read line from stream</td><td><code>getline(cin, s, ',');</code></td></tr>
+                            <tr><td>swap</td><td><code>swap(str1, str2)</code></td><td>Swaps two strings</td><td><code>swap(s1, s2);</code></td></tr>
+                            <tr><td>stoi, stol, stoll</td><td><code>stoi(str, pos, base)</code></td><td>String to integer types</td><td><code>int i = stoi("123");</code></td></tr>
+                            <tr><td>stoul, stoull</td><td><code>stoul(str, pos, base)</code></td><td>String to unsigned integer types</td><td><code>unsigned long ul = stoul("123");</code></td></tr>
+                            <tr><td>stof, stod, stold</td><td><code>stof(str, pos)</code></td><td>String to floating-point types</td><td><code>double d = stod("3.14159");</code></td></tr>
+                            <tr><td>to_string</td><td><code>to_string(val)</code></td><td>Converts number to string</td><td><code>string s = to_string(123.45);</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>C-Style String Functions (&lt;cstring&gt;)</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Function</th><th>Syntax</th><th>Description</th><th>Example Usage</th></tr></thead>
+                        <tbody>
+                            <tr><td>strlen</td><td><code>strlen(str)</code></td><td>Returns string length</td><td><code>size_t len = strlen("Hello");</code></td></tr>
+                            <tr><td>strcpy</td><td><code>strcpy(dest, src)</code></td><td>Copies string</td><td><code>strcpy(buffer, "Hello");</code></td></tr>
+                            <tr><td>strncpy</td><td><code>strncpy(dest, src, n)</code></td><td>Copies n characters</td><td><code>strncpy(buf, src, 10);</code></td></tr>
+                            <tr><td>strcat</td><td><code>strcat(dest, src)</code></td><td>Concatenates strings</td><td><code>strcat(str1, str2);</code></td></tr>
+                            <tr><td>strncat</td><td><code>strncat(dest, src, n)</code></td><td>Concatenates n characters</td><td><code>strncat(str1, str2, 5);</code></td></tr>
+                            <tr><td>strcmp</td><td><code>strcmp(str1, str2)</code></td><td>Compares strings</td><td><code>int cmp = strcmp(s1, s2);</code></td></tr>
+                            <tr><td>strncmp</td><td><code>strncmp(str1, str2, n)</code></td><td>Compares n characters</td><td><code>int cmp = strncmp(s1, s2, 3);</code></td></tr>
+                            <tr><td>strchr</td><td><code>strchr(str, c)</code></td><td>Finds first occurrence of character</td><td><code>char* ptr = strchr(str, 'a');</code></td></tr>
+                            <tr><td>strstr</td><td><code>strstr(haystack, needle)</code></td><td>Finds substring</td><td><code>char* ptr = strstr(text, "sub");</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>String Stream Functions (&lt;sstream&gt;)</h2>
+                 <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Function</th><th>Syntax</th><th>Description</th><th>Example Usage</th></tr></thead>
+                        <tbody>
+                            <tr><td>stringstream</td><td><code>stringstream ss(str)</code></td><td>String stream constructor</td><td><code>stringstream ss("Hello 123");</code></td></tr>
+                            <tr><td>str()</td><td><code>ss.str()</code>, <code>ss.str(string)</code></td><td>Get/set string content</td><td><code>string s = ss.str(); ss.str("new");</code></td></tr>
+                            <tr><td>operator<<</td><td><code>ss << value</code></td><td>Insert into stream</td><td><code>ss << "World " << 456;</code></td></tr>
+                            <tr><td>operator>></td><td><code>ss >> variable</code></td><td>Extract from stream</td><td><code>ss >> word >> number;</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const ICONS = {
+             overview: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20v-2H6.5A2.5 2.5 0 0 1 4 12.5v-1A2.5 2.5 0 0 1 6.5 9H20V7H6.5A2.5 2.5 0 0 1 4 4.5v-1" /><style>@keyframes p { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); }} path { animation: p 2s infinite; }</style></svg>`,
+            vector: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="10" rx="2" ry="2"/><line x1="6" y1="2" x2="6" y2="7"/><line x1="18" y1="2" x2="18" y2="7"/><style>@keyframes r { from { transform: translateY(0); } to { transform: translateY(-2px); }} rect, line { animation: r 1s infinite alternate; }</style></svg>`,
+            list: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h10M8 12h10M8 18h10M4 6h.01M4 12h.01M4 18h.01"/><style>@keyframes f { 0%{opacity:0.3} 50%{opacity:1} 100%{opacity:0.3}} path {animation: f 3s infinite;}</style></svg>`,
+            deque: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/><polyline points="9 18 3 12 9 6"/><style>@keyframes s { from{transform:translateX(0)} to{transform:translateX(-2px)}} polyline {animation: s 1s infinite alternate;}</style></svg>`,
+            array: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><style>@keyframes g{from{opacity:0.5}to{opacity:1}} rect{animation:g 1.5s infinite alternate;}</style></svg>`,
+            forward_list: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/><line x1="5" y1="12" x2="15" y2="12"/><style>@keyframes m{from{transform:translateX(0)} to{transform:translateX(2px)}} polyline, line {animation: m 1s infinite alternate;}</style></svg>`,
+            set: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22V10M12 10l-4-4 4-4 4 4-4 4zM20 18h-8"/><style>@keyframes t{from{transform:scale(0.95)}to{transform:scale(1.05)}} path{animation: t 2s infinite alternate;}</style></svg>`,
+            multiset: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22V10M12 10l-4-4 4-4 4 4-4 4zM20 18h-8M20 14h-8"/><style>@keyframes t2{from{transform:scale(0.95)}to{transform:scale(1.05)}} path{animation: t2 2s infinite alternate;}</style></svg>`,
+            map: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle><style>@keyframes k{from{transform:translateY(0)}to{transform:translateY(-2px)}} circle, path{animation:k 1.5s infinite alternate;}</style></svg>`,
+            multimap: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle><path d="M19 12h4"/><style>@keyframes k2{from{transform:translateY(0)}to{transform:translateY(-2px)}} circle, path{animation:k2 1.5s infinite alternate;}</style></svg>`,
+            unordered: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M7 2l5 10-5 10M17 2l-5 10 5 10"/><style>@keyframes z{0%{stroke-dashoffset: 20} 100%{stroke-dashoffset: 0}} path{stroke-dasharray:20; animation:z 1s infinite linear;}</style></svg>`,
+            stack: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18h16M4 14h16M4 10h16M4 6h16"/><style>@keyframes u{0%{transform:translateY(0)} 50%{transform:translateY(-2px)} 100%{transform:translateY(0)}} path:nth-child(1){animation-delay:0s} path:nth-child(2){animation-delay:.1s} path:nth-child(3){animation-delay:.2s} path:nth-child(4){animation-delay:.3s} path{animation: u 2s infinite;}</style></svg>`,
+            queue: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16m-4-4l4 4-4 4M4 6h16M4 18h16"/><style>@keyframes q{from{transform:translateX(0)}to{transform:translateX(1px)}} path{animation: q 1s infinite alternate;}</style></svg>`,
+            priority_queue: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/><style>@keyframes gl{from{opacity:0.5}to{opacity:1}} path{animation: gl 1.5s infinite alternate;}</style></svg>`,
+            algorithms: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/><style>@keyframes rot{from{transform:rotate(0deg)} to{transform:rotate(360deg)}} path, circle {animation: rot 8s linear infinite; transform-origin: center;}</style></svg>`,
+            summary: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/><style>@keyframes b{0%{transform:scaleY(0.8)}50%{transform:scaleY(1)}100%{transform:scaleY(0.8)}} path:nth-child(1){animation-delay:0s} path:nth-child(2){animation-delay:.2s} path:nth-child(3){animation-delay:.4s} path{animation:b 1.5s infinite; transform-origin:bottom}</style></svg>`,
+            quick_ref: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/><style>@keyframes fl{0%{opacity:0.2} 50%{opacity:1} 100%{opacity:0.2}} path{animation: fl 1.5s infinite;}</style></svg>`,
+            string: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line><style>@keyframes t-anim{from{transform:scaleY(0.95)}to{transform:scaleY(1.05)}} line, polyline{animation: t-anim 2s infinite alternate; transform-origin:center}</style></svg>`,
+        };
+        
+         const pageData = [
+            { id: "overview", title: "Overview", icon: ICONS.overview, href: 'index.html#overview' },
+            { id: "algorithms", title: "STL Algorithms", icon: ICONS.algorithms, href: 'algorithms.html' },
+            { id: "vector", title: "Vector", icon: ICONS.vector, href: 'index.html#vector' },
+            { id: "string-functions", title: "String Functions", icon: ICONS.string, href: 'string_functions.html' },
+            { id: "list", title: "List", icon: ICONS.list, href: 'index.html#list' },
+            { id: "deque", title: "Deque", icon: ICONS.deque, href: 'index.html#deque' },
+            { id: "array", title: "Array", icon: ICONS.array, href: 'index.html#array' },
+            { id: "forward-list", title: "Forward List", icon: ICONS.forward_list, href: 'index.html#forward-list' },
+            { id: "set", title: "Set", icon: ICONS.set, href: 'index.html#set' },
+            { id: "multiset", title: "Multiset", icon: ICONS.multiset, href: 'index.html#multiset' },
+            { id: "unordered-set", title: "Unordered Set", icon: ICONS.unordered, href: 'index.html#unordered-set' },
+            { id: "map", title: "Map", icon: ICONS.map, href: 'index.html#map' },
+            { id: "multimap", title: "Multimap", icon: ICONS.multimap, href: 'index.html#multimap' },
+            { id: "unordered-map", title: "Unordered Map", icon: ICONS.unordered, href: 'index.html#unordered-map' },
+            { id: "unordered-multimap", title: "Unordered Multimap", icon: ICONS.unordered, href: 'index.html#unordered-multimap' },
+            { id: "stack", title: "Stack", icon: ICONS.stack, href: 'index.html#stack' },
+            { id: "queue", title: "Queue", icon: ICONS.queue, href: 'index.html#queue' },
+            { id: "priority-queue", title: "Priority Queue", icon: ICONS.priority_queue, href: 'index.html#priority-queue' },
+            { id: "summary", title: "Summary Table", icon: ICONS.summary, href: 'index.html#summary' },
+            { id: "quick-ref", title: "Quick Reference", icon: ICONS.quick_ref, href: 'index.html#quick-ref' }
+        ];
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebarNav = document.getElementById('sidebarNav');
+            
+            // --- Populate Sidebar ---
+            const navUl = document.createElement('ul');
+            pageData.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="${item.href}"><span class="icon-container">${item.icon}</span>${item.title}</a>`;
+                navUl.appendChild(li);
+            });
+            sidebarNav.appendChild(navUl);
+
+            // --- Set Active Link ---
+            const currentLink = document.querySelector('a[href="string_functions.html"]');
+            if (currentLink) {
+                currentLink.classList.add('active');
+            }
+            
+            // --- Sidebar Toggle Logic ---
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            let isMobile = window.innerWidth <= 1024;
+
+            const setInitialLayoutState = () => {
+                if (isMobile) {
+                    sidebar.classList.add('collapsed');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                }
+            };
+            
+            setInitialLayoutState();
+
+            window.addEventListener('resize', () => {
+                const newIsMobile = window.innerWidth <= 1024;
+                if (newIsMobile !== isMobile) {
+                    isMobile = newIsMobile;
+                    setInitialLayoutState();
+                }
+            });
+
+            menuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.classList.toggle('collapsed');
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (isMobile && !sidebar.classList.contains('collapsed') && !sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                    sidebar.classList.add('collapsed');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

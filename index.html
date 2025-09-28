@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete C++ STL Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0a0e1a;
+            --sidebar-bg: #1a1f2e;
+            --card-bg: #252b3d;
+            --border-color: #3d4458;
+            --text-color: #e2e8f0;
+            --header-color: #ffffff;
+            --primary-color: #60a5fa;
+            --secondary-color: #a78bfa;
+            --accent-color: #34d399;
+            --icon-color: #fbbf24;
+            --danger-color: #f87171;
+            --success-color: #22c55e;
+            --glow-primary: rgba(96, 165, 250, 0.3);
+            --glow-secondary: rgba(167, 139, 250, 0.3);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, var(--bg-color) 0%, #0f172a 100%);
+            color: var(--text-color);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, var(--sidebar-bg) 0%, #1e293b 100%);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+            transform: translateX(0); /* Default state is visible */
+        }
+        
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--header-color);
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+        }
+
+        .sidebar nav ul {
+            list-style-type: none;
+            padding: 10px 0;
+            margin: 0;
+        }
+
+        .sidebar nav li a {
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 12px 24px;
+            margin: 4px 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 4px solid transparent;
+            border-radius: 12px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sidebar nav li a .icon-container {
+            margin-right: 12px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar nav li a .icon-container svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .sidebar nav li a:hover {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: #fff;
+            transform: translateX(5px);
+            box-shadow: 0 8px 25px var(--glow-primary);
+        }
+
+        .sidebar nav li a:hover .icon-container {
+            transform: scale(1.2) rotate(10deg);
+        }
+        
+        .sidebar nav li a.active {
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.2), rgba(167, 139, 250, 0.2));
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            box-shadow: 0 4px 15px var(--glow-primary);
+        }
+
+        .main-content {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+            padding: 40px 50px;
+            background: radial-gradient(ellipse at top, rgba(96, 165, 250, 0.05) 0%, transparent 50%);
+            transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.collapsed + .main-content {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        .content-section {
+            padding-top: 40px;
+            margin-top: -20px;
+            margin-bottom: 50px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1, h2, h3 {
+            color: var(--header-color);
+            font-weight: 700;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px var(--glow-primary);
+        }
+        
+        h1 .section-icon {
+             width: 1em;
+             height: 1em;
+             display: inline-block;
+             vertical-align: middle;
+             margin-right: 0.2em;
+        }
+
+        h2 {
+            font-size: 2.2em;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+            padding-bottom: 10px;
+            border-bottom: 2px solid transparent;
+            border-image: linear-gradient(90deg, var(--secondary-color), transparent) 1;
+            display: flex;
+            align-items: center;
+        }
+        
+        h2 .section-icon {
+            margin-right: 16px;
+            font-size: 1.2em;
+            width: 40px;
+            height: 40px;
+        }
+
+        h3 {
+            font-size: 1.6em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        h3 .icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+        }
+
+        h3::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--accent-color), var(--success-color));
+            border-radius: 2px;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, var(--card-bg) 0%, #2a3441 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border-color: var(--primary-color);
+        }
+        
+        .declaration-card {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            padding: 0;
+            margin-bottom: 30px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .declaration-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 16px 24px;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .declaration-header .icon {
+            margin-right: 12px;
+            font-size: 1.3em;
+            width: 24px;
+            height: 24px;
+        }
+
+        .declaration-content {
+            padding: 24px;
+        }
+
+        .declaration-content pre {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            overflow-x: auto;
+            position: relative;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .declaration-content pre:hover {
+            border-color: var(--primary-color);
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 20px var(--glow-primary);
+        }
+
+        .declaration-content code {
+            color: var(--text-color);
+            background: none;
+            padding: 0;
+        }
+
+        .card ul {
+            padding-left: 24px;
+            margin: 0;
+        }
+        
+        .card li {
+            margin-bottom: 12px;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .card li:hover {
+            transform: translateX(5px);
+            color: var(--primary-color);
+        }
+        
+        .card li::marker {
+            color: var(--primary-color);
+        }
+        
+        .note-card {
+            background: linear-gradient(135deg, rgba(251, 191, 38, 0.1), rgba(251, 191, 38, 0.05));
+            border-left: 4px solid var(--icon-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(251, 191, 38, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .note-card::before {
+            content: '💡';
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5em;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { opacity: 0.5; transform: scale(1); }
+            to { opacity: 1; transform: scale(1.1); }
+        }
+
+        .note-card p {
+            margin: 0;
+        }
+        
+        .table-wrapper {
+             overflow-x: auto;
+             -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 25px;
+            background: linear-gradient(135deg, var(--card-bg) 0%, #2a3441 100%);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            min-width: 600px; /* Prevent table from squishing too much */
+        }
+
+        th, td {
+            text-align: left;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        tr:last-child td { 
+            border-bottom: none; 
+        }
+
+        thead tr {
+            background: linear-gradient(135deg, var(--sidebar-bg) 0%, #334155 100%);
+            color: var(--header-color);
+            font-weight: 600;
+        }
+
+        thead th {
+            position: relative;
+            font-size: 1.05em;
+        }
+
+        thead th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        thead tr:hover th::after {
+            opacity: 1;
+        }
+        
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:nth-child(even) { 
+            background: rgba(255, 255, 255, 0.02); 
+        }
+
+        tbody tr:hover {
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.1), rgba(167, 139, 250, 0.1));
+            transform: translateX(5px);
+            box-shadow: 5px 0 15px rgba(96, 165, 250, 0.2);
+        }
+
+        tbody tr:hover td {
+            color: var(--header-color);
+        }
+        
+        code, .code {
+            font-family: 'Fira Code', 'Courier New', monospace;
+            background: linear-gradient(135deg, var(--sidebar-bg), #1e293b);
+            color: var(--danger-color);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            border: 1px solid rgba(248, 113, 113, 0.2);
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        code:hover {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: #fff;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px var(--glow-secondary);
+        }
+        
+        .algo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        
+        .algo-card {
+            background: linear-gradient(135deg, var(--sidebar-bg) 0%, #334155 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .algo-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transition: left 0.5s ease;
+        }
+
+        .algo-card:hover::before {
+            left: 0;
+        }
+
+        .algo-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(96, 165, 250, 0.3);
+            border-color: var(--primary-color);
+        }
+
+        .algo-card h4 {
+            margin: 0 0 12px 0;
+            color: var(--icon-color);
+            font-size: 1.15em;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s ease;
+        }
+
+        .algo-card:hover h4 {
+            color: var(--primary-color);
+        }
+
+        .algo-card h4 .icon { 
+            margin-right: 12px; 
+            width: 24px;
+            height: 24px;
+        }
+
+        .algo-card p {
+            margin: 0;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .menu-toggle {
+            display: flex; /* Always visible */
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: 0 8px 25px rgba(96, 165, 250, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .menu-toggle:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 12px 35px rgba(96, 165, 250, 0.6);
+        }
+
+        .menu-toggle:active {
+            transform: scale(0.95);
+        }
+        
+        .quick-ref-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 30px;
+        }
+        
+        .quick-ref-item {
+            background: linear-gradient(135deg, var(--card-bg) 0%, #334155 100%);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-ref-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .quick-ref-item:hover::before {
+            transform: scaleX(1);
+        }
+
+        .quick-ref-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(96, 165, 250, 0.3);
+            border-color: var(--primary-color);
+        }
+
+        .quick-ref-item .icon { 
+            width: 40px;
+            height: 40px;
+            margin-right: 20px;
+        }
+
+        .quick-ref-item strong { 
+            color: var(--primary-color); 
+        }
+
+        /* Search Bar Styles */
+        .search-container {
+            margin-bottom: 40px;
+            position: sticky;
+            top: 0;
+            z-index: 990;
+            background: var(--bg-color);
+            padding: 20px 0;
+            margin-top: -40px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 1;
+            max-height: 120px; /* A reasonable max height for the animation */
+            overflow: visible; /* Allow dropdown to show */
+        }
+
+        .search-container.collapsed {
+            opacity: 0;
+            max-height: 0;
+            margin-bottom: 0;
+            padding: 0;
+            margin-top: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .search-wrapper {
+            position: relative;
+        }
+        .search-wrapper svg {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            stroke: var(--primary-color);
+            opacity: 0.6;
+        }
+        #searchBar {
+            width: 100%;
+            padding: 20px 20px 20px 60px;
+            font-size: 1.2em;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            background-color: var(--sidebar-bg);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-sizing: border-box;
+        }
+        #searchBar:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 25px var(--glow-primary);
+        }
+        .search-results {
+            display: none;
+            position: absolute;
+            width: 100%;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .search-result-item {
+            padding: 15px 20px;
+            color: var(--text-color);
+            text-decoration: none;
+            display: block;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+        .search-result-item:hover {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+
+        @media (max-width: 1024px) {
+            .main-content { 
+                /* Margin is now handled by the .collapsed class logic */
+                width: 100%; 
+                padding: 30px; 
+            }
+            .search-container {
+                margin-top: -30px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content { 
+                padding: 20px; 
+            }
+            .search-container {
+                margin-top: -20px;
+            }
+            h1 { 
+                font-size: 2.2em; 
+            }
+            h2 { 
+                font-size: 1.8em; 
+            }
+            h3 { 
+                font-size: 1.4em; 
+            }
+            table { 
+                font-size: 0.9em; 
+            }
+            .quick-ref-grid { 
+                grid-template-columns: 1fr; 
+            }
+            .algo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="menu-toggle" id="menuToggle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+    
+    <button class="menu-toggle" id="searchToggle" style="left: auto; right: 20px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    </button>
+
+    <div class="container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">C++ STL Guide</div>
+            <nav id="sidebarNav"></nav>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            
+            <div class="search-container">
+                <div class="search-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="searchBar" placeholder="Search for a container or algorithm...">
+                </div>
+                <div id="searchResults" class="search-results"></div>
+            </div>
+
+            <section id="overview" class="content-section">
+                <h1><span class="section-icon pulsing"></span>Complete C++ STL Guide</h1>
+                <div class="card">
+                    <p>This comprehensive guide covers all major STL containers, their internal structure, member functions, and applicable algorithms. Each container section includes details on how elements are stored and organized internally, providing a deep dive into their performance characteristics and use cases.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const ICONS = {
+            overview: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20v-2H6.5A2.5 2.5 0 0 1 4 12.5v-1A2.5 2.5 0 0 1 6.5 9H20V7H6.5A2.5 2.5 0 0 1 4 4.5v-1" /><style>@keyframes p { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); }} path { animation: p 2s infinite; }</style></svg>`,
+            vector: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="10" rx="2" ry="2"/><line x1="6" y1="2" x2="6" y2="7"/><line x1="18" y1="2" x2="18" y2="7"/><style>@keyframes r { from { transform: translateY(0); } to { transform: translateY(-2px); }} rect, line { animation: r 1s infinite alternate; }</style></svg>`,
+            list: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h10M8 12h10M8 18h10M4 6h.01M4 12h.01M4 18h.01"/><style>@keyframes f { 0%{opacity:0.3} 50%{opacity:1} 100%{opacity:0.3}} path {animation: f 3s infinite;}</style></svg>`,
+            deque: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/><polyline points="9 18 3 12 9 6"/><style>@keyframes s { from{transform:translateX(0)} to{transform:translateX(-2px)}} polyline {animation: s 1s infinite alternate;}</style></svg>`,
+            array: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><style>@keyframes g{from{opacity:0.5}to{opacity:1}} rect{animation:g 1.5s infinite alternate;}</style></svg>`,
+            forward_list: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/><line x1="5" y1="12" x2="15" y2="12"/><style>@keyframes m{from{transform:translateX(0)} to{transform:translateX(2px)}} polyline, line {animation: m 1s infinite alternate;}</style></svg>`,
+            set: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22V10M12 10l-4-4 4-4 4 4-4 4zM20 18h-8"/><style>@keyframes t{from{transform:scale(0.95)}to{transform:scale(1.05)}} path{animation: t 2s infinite alternate;}</style></svg>`,
+            multiset: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22V10M12 10l-4-4 4-4 4 4-4 4zM20 18h-8M20 14h-8"/><style>@keyframes t2{from{transform:scale(0.95)}to{transform:scale(1.05)}} path{animation: t2 2s infinite alternate;}</style></svg>`,
+            map: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle><style>@keyframes k{from{transform:translateY(0)}to{transform:translateY(-2px)}} circle, path{animation:k 1.5s infinite alternate;}</style></svg>`,
+            multimap: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle><path d="M19 12h4"/><style>@keyframes k2{from{transform:translateY(0)}to{transform:translateY(-2px)}} circle, path{animation:k2 1.5s infinite alternate;}</style></svg>`,
+            unordered: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M7 2l5 10-5 10M17 2l-5 10 5 10"/><style>@keyframes z{0%{stroke-dashoffset: 20} 100%{stroke-dashoffset: 0}} path{stroke-dasharray:20; animation:z 1s infinite linear;}</style></svg>`,
+            stack: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18h16M4 14h16M4 10h16M4 6h16"/><style>@keyframes u{0%{transform:translateY(0)} 50%{transform:translateY(-2px)} 100%{transform:translateY(0)}} path:nth-child(1){animation-delay:0s} path:nth-child(2){animation-delay:.1s} path:nth-child(3){animation-delay:.2s} path:nth-child(4){animation-delay:.3s} path{animation: u 2s infinite;}</style></svg>`,
+            queue: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16m-4-4l4 4-4 4M4 6h16M4 18h16"/><style>@keyframes q{from{transform:translateX(0)}to{transform:translateX(1px)}} path{animation: q 1s infinite alternate;}</style></svg>`,
+            priority_queue: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/><style>@keyframes gl{from{opacity:0.5}to{opacity:1}} path{animation: gl 1.5s infinite alternate;}</style></svg>`,
+            algorithms: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/><style>@keyframes rot{from{transform:rotate(0deg)} to{transform:rotate(360deg)}} path, circle {animation: rot 8s linear infinite; transform-origin: center;}</style></svg>`,
+            summary: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/><style>@keyframes b{0%{transform:scaleY(0.8)}50%{transform:scaleY(1)}100%{transform:scaleY(0.8)}} path:nth-child(1){animation-delay:0s} path:nth-child(2){animation-delay:.2s} path:nth-child(3){animation-delay:.4s} path{animation:b 1.5s infinite; transform-origin:bottom}</style></svg>`,
+            quick_ref: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/><style>@keyframes fl{0%{opacity:0.2} 50%{opacity:1} 100%{opacity:0.2}} path{animation: fl 1.5s infinite;}</style></svg>`,
+            search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><style>@keyframes p{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}} circle,line{animation:p 2s infinite;transform-origin:center}</style></svg>`,
+            info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line><style>@keyframes p{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}} circle,line{animation:p 2s infinite;transform-origin:center}</style></svg>`,
+            count: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/><style>@keyframes b{0%{transform:scale(.95)}50%{transform:scale(1.05)}100%{transform:scale(.95)}} path{animation:b 1.5s infinite;transform-origin:center}</style></svg>`,
+            loop: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/><style>@keyframes r{from{transform:rotate(0deg)}to{transform:rotate(360deg)}} path{animation:r 10s linear infinite;transform-origin:center}</style></svg>`,
+            transform: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L12 22M22 12L2 12"/><path d="M17.5 7.5L12 2L6.5 7.5"/><path d="M7.5 16.5L12 22L16.5 16.5"/><style>@keyframes z{0%{stroke-dashoffset:20}100%{stroke-dashoffset:0}} path{stroke-dasharray:20;animation:z 1s infinite linear;}</style></svg>`,
+            copy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/><style>@keyframes f{0%{opacity:.3}50%{opacity:1}100%{opacity:.3}} path,rect{animation:f 3s infinite}</style></svg>`,
+            remove: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line><style>@keyframes s{from{transform:scale(.95)}to{transform:scale(1.05)}} circle,line{animation:s 2s infinite alternate;transform-origin:center}</style></svg>`,
+            sort: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18M3 8h12M3 12h8M3 16h4M3 20h2"/><style>@keyframes m{from{transform:translateX(0)}to{transform:translateX(1px)}} path{animation:m 1s infinite alternate}</style></svg>`,
+            bounds: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/><style>@keyframes k2{from{transform:translateX(0)}to{transform:translateX(-1px)}} path{animation:k2 1.5s infinite alternate}</style></svg>`,
+            numeric: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10V4h-5"/><path d="M4 20h16"/><path d="M6 14h2"/><path d="M10 14h2"/><path d="M14 14h2"/><path d="M6 10h12"/><style>@keyframes f{0%{opacity:.3}50%{opacity:1}100%{opacity:.3}} path{animation:f 3s infinite}</style></svg>`,
+            string: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line><style>@keyframes t-anim{from{transform:scaleY(0.95)}to{transform:scaleY(1.05)}} line, polyline{animation: t-anim 2s infinite alternate; transform-origin:center}</style></svg>`,
+        };
+        
+        const pageData = [
+            { id: "overview", title: "Overview", icon: ICONS.overview },
+            { 
+                id: "algorithms", title: "STL Algorithms", icon: ICONS.algorithms,
+                isExternal: true, // Mark this as an external link
+                href: 'algorithms.html'
+            },
+            { 
+                id: "vector", title: "Vector", icon: ICONS.vector,
+                declarations: `// Default (empty vector)
+vector<int> v1;
+
+// With initial size and value
+vector<int> v2(5, 10); // 5 integers with value 10
+
+// From an initializer list (C++11)
+vector<string> v3 = {"apple", "banana", "cherry"};
+
+// From another vector (copy)
+vector<string> v4(v3);
+
+// From a range of iterators
+vector<int> v5(v2.begin(), v2.begin() + 3); // {10, 10, 10}`,
+                structure: `<ul><li><strong>Storage:</strong> Contiguous memory array (like C array)</li><li><strong>Element Order:</strong> Elements maintain insertion order</li><li><strong>Memory Layout:</strong> All elements stored consecutively in memory</li><li><strong>Growth:</strong> When capacity exceeded, allocates new larger array and copies all elements</li><li><strong>Access Pattern:</strong> Random access via index in O(1) time</li><li><strong>Cache Performance:</strong> Excellent due to memory locality</li></ul>`,
+                functions: `<tr><td>assign</td><td>Assigns new content to vector</td><td><code>assign(count, value)</code></td></tr><tr><td>at</td><td>Access element with bounds checking</td><td><code>at(index)</code></td></tr><tr><td>back</td><td>Access last element</td><td><code>back()</code></td></tr><tr><td>capacity</td><td>Return size of allocated storage capacity</td><td><code>capacity()</code></td></tr><tr><td>clear</td><td>Clear all elements</td><td><code>clear()</code></td></tr><tr><td>data</td><td>Access underlying array</td><td><code>data()</code></td></tr><tr><td>emplace</td><td>Construct and insert element</td><td><code>emplace(iterator, args...)</code></td></tr><tr><td>emplace_back</td><td>Construct and insert element at end</td><td><code>emplace_back(args...)</code></td></tr><tr><td>empty</td><td>Test whether vector is empty</td><td><code>empty()</code></td></tr><tr><td>erase</td><td>Erase elements</td><td><code>erase(iterator)</code></td></tr><tr><td>front</td><td>Access first element</td><td><code>front()</code></td></tr><tr><td>insert</td><td>Insert elements</td><td><code>insert(iterator, value)</code></td></tr><tr><td>pop_back</td><td>Delete last element</td><td><code>pop_back()</code></td></tr><tr><td>push_back</td><td>Add element at the end</td><td><code>push_back(value)</code></td></tr><tr><td>reserve</td><td>Request a change in capacity</td><td><code>reserve(n)</code></td></tr><tr><td>resize</td><td>Change size</td><td><code>resize(n, val)</code></td></tr><tr><td>shrink_to_fit</td><td>Shrink to fit</td><td><code>shrink_to_fit()</code></td></tr><tr><td>size</td><td>Return size</td><td><code>size()</code></td></tr><tr><td>swap</td><td>Swap content</td><td><code>swap(other)</code></td></tr>`,
+                algorithms: [
+                    { name: 'find / find_if', icon: ICONS.search, description: 'Finds the first element matching a value or predicate.' },
+                    { name: 'count / count_if', icon: ICONS.count, description: 'Counts occurrences of a value or predicate match.' },
+                    { name: 'for_each', icon: ICONS.loop, description: 'Applies a function to each element.' },
+                    { name: 'transform', icon: ICONS.transform, description: 'Applies an operation and stores the result.' },
+                    { name: 'copy / move', icon: ICONS.copy, description: 'Copies or moves elements between ranges.' },
+                    { name: 'remove / remove_if', icon: ICONS.remove, description: 'Use with <code>.erase()</code> to remove elements.' },
+                    { name: 'replace / replace_if', icon: ICONS.loop, description: 'Replaces elements matching a value or predicate.' },
+                    { name: 'reverse / rotate / shuffle', icon: ICONS.loop, description: 'Changes element order.' },
+                    { name: 'sort / stable_sort', icon: ICONS.sort, description: 'Sorts a range.' },
+                    { name: 'binary_search', icon: ICONS.search, description: 'Efficiently checks for a value in a sorted range.' },
+                    { name: 'lower_bound / upper_bound', icon: ICONS.bounds, description: 'Finds insertion points in a sorted range.' },
+                    { name: 'accumulate', icon: ICONS.numeric, description: 'Sums up elements in a range.' },
+                    { name: 'iota', icon: ICONS.numeric, description: 'Fills a range with an increasing sequence.' },
+                ]
+            },
+            { 
+                id: "string-functions", title: "String Functions", icon: ICONS.string,
+                isExternal: true,
+                href: 'string_functions.html'
+            },
+            { 
+                id: "list", title: "List", icon: ICONS.list,
+                declarations: `// Default (empty list)
+list<int> l1;
+
+// With initial size and value
+list<int> l2(4, 100); // 4 integers with value 100
+
+// From an initializer list (C++11)
+list<string> l3 = {"cat", "dog", "mouse"};
+
+// From another list (copy)
+list<string> l4(l3);`,
+                structure: `<ul><li><strong>Storage:</strong> Doubly-linked list of nodes</li><li><strong>Element Order:</strong> Elements maintain insertion order</li><li><strong>Memory Layout:</strong> Each element stored in separate node with pointers to previous/next</li><li><strong>Access Pattern:</strong> Sequential access only, O(n) to reach specific position</li><li><strong>Cache Performance:</strong> Poor due to non-contiguous memory allocation</li><li><strong>Special Operations:</strong> Efficient splice, merge, sort operations</li></ul>`,
+                functions: `<tr><td>assign</td><td>Assigns new content to list</td><td><code>assign(count, value)</code></td></tr><tr><td>back</td><td>Access last element</td><td><code>back()</code></td></tr><tr><td>clear</td><td>Clear all elements</td><td><code>clear()</code></td></tr><tr><td>emplace_back</td><td>Construct and insert element at end</td><td><code>emplace_back(args...)</code></td></tr><tr><td>emplace_front</td><td>Construct and insert element at beginning</td><td><code>emplace_front(args...)</code></td></tr><tr><td>empty</td><td>Test whether list is empty</td><td><code>empty()</code></td></tr><tr><td>erase</td><td>Erase elements</td><td><code>erase(iterator)</code></td></tr><tr><td>front</td><td>Access first element</td><td><code>front()</code></td></tr><tr><td>insert</td><td>Insert elements</td><td><code>insert(iterator, value)</code></td></tr><tr><td>merge</td><td>Merge sorted lists</td><td><code>merge(other)</code></td></tr><tr><td>pop_back</td><td>Delete last element</td><td><code>pop_back()</code></td></tr><tr><td>pop_front</td><td>Delete first element</td><td><code>pop_front()</code></td></tr><tr><td>push_back</td><td>Add element at the end</td><td><code>push_back(value)</code></td></tr><tr><td>push_front</td><td>Add element at the beginning</td><td><code>push_front(value)</code></td></tr><tr><td>remove</td><td>Remove elements with specific value</td><td><code>remove(value)</code></td></tr><tr><td>remove_if</td><td>Remove elements satisfying condition</td><td><code>remove_if(predicate)</code></td></tr><tr><td>reverse</td><td>Reverse the order of elements</td><td><code>reverse()</code></td></tr><tr><td>sort</td><td>Sort elements</td><td><code>sort()</code></td></tr><tr><td>splice</td><td>Transfer elements from list to list</td><td><code>splice(iterator, other)</code></td></tr><tr><td>unique</td><td>Remove duplicate values</td><td><code>unique()</code></td></tr>`,
+                algorithms: `<div class="card"><p>List supports algorithms that work with bidirectional iterators (<code>find</code>, 
+<code>for_each</code>, <code>reverse</code>). It does not support algorithms requiring random access (like <code>sort</code>), but provides its own highly optimized member functions (e.g., <code>list::sort</code>) for these tasks.</p></div>`
+            },
+            {
+                id: "deque", title: "Deque", icon: ICONS.deque,
+                declarations: `// Default (empty deque)
+deque<int> d1;
+
+// With initial size and value
+deque<int> d2(3, 42); // 3 integers with value 42
+
+// From an initializer list (C++11)
+deque<char> d3 = {'a', 'b', 'c'};
+
+// From another deque (copy)
+deque<char> d4(d3);`,
+                structure: `<ul><li><strong>Storage:</strong> Double-ended queue using segmented array (chunks of contiguous memory)</li><li><strong>Element Order:</strong> Elements maintain insertion order</li><li><strong>Memory Layout:</strong> Map of fixed-size arrays</li><li><strong>Access Pattern:</strong> Random access in O(1) via chunk calculation</li><li><strong>Cache Performance:</strong> Good for sequential access, moderate for random access</li></ul>`,
+                functions: `<tr><td>assign</td><td>Assigns new content to deque</td><td><code>assign(count, value)</code></td></tr><tr><td>at</td><td>Access element with bounds checking</td><td><code>at(index)</code></td></tr><tr><td>back</td><td>Access last element</td><td><code>back()</code></td></tr><tr><td>clear</td><td>Clear all elements</td><td><code>clear()</code></td></tr><tr><td>emplace_back</td><td>Construct and insert element at end</td><td><code>emplace_back(args...)</code></td></tr><tr><td>emplace_front</td><td>Construct and insert element at beginning</td><td><code>emplace_front(args...)</code></td></tr><tr><td>empty</td><td>Test whether deque is empty</td><td><code>empty()</code></td></tr><tr><td>erase</td><td>Erase elements</td><td><code>erase(iterator)</code></td></tr><tr><td>front</td><td>Access first element</td><td><code>front()</code></td></tr><tr><td>pop_back</td><td>Delete last element</td><td><code>pop_back()</code></td></tr><tr><td>pop_front</td><td>Delete first element</td><td><code>pop_front()</code></td></tr><tr><td>push_back</td><td>Add element at the end</td><td><code>push_back(value)</code></td></tr><tr><td>push_front</td><td>Add element at the beginning</td><td><code>push_front(value)</code></td></tr>`,
+                algorithms: `<div class="card"><p>Deque supports all STL algorithms that vector supports since it provides random access iterators. All algorithms from the vector section apply with identical syntax.</p></div>`
+            },
+            { 
+                id: "array", title: "Array", icon: ICONS.array,
+                declarations: `// Size must be a compile-time constant
+// Aggregate initialization
+array<int, 5> a1 = {1, 2, 3, 4, 5};
+
+// Uniform initialization (C++11)
+array<string, 3> a2 = {"one", "two", "three"};
+
+// Zero-initialization
+array<int, 4> a3 = {}; // {0, 0, 0, 0}`,
+                structure: `<ul><li><strong>Storage:</strong> Fixed-size contiguous memory array (stack allocated)</li><li><strong>Element Order:</strong> Elements maintain insertion/assignment order</li><li><strong>Size:</strong> Fixed at compile-time, cannot grow or shrink</li><li><strong>Access Pattern:</strong> Random access via index in O(1) time</li><li><strong>Cache Performance:</strong> Excellent due to memory locality</li></ul>`,
+                functions: `<tr><td>at</td><td>Access element with bounds checking</td><td><code>at(index)</code></td></tr><tr><td>back</td><td>Access last element</td><td><code>back()</code></td></tr><tr><td>data</td><td>Access underlying array</td><td><code>data()</code></td></tr><tr><td>empty</td><td>Test whether array is empty</td><td><code>empty()</code></td></tr><tr><td>fill</td><td>Fill array with value</td><td><code>fill(value)</code></td></tr><tr><td>front</td><td>Access first element</td><td><code>front()</code></td></tr><tr><td>max_size</td><td>Return maximum size</td><td><code>max_size()</code></td></tr><tr><td>operator[]</td><td>Access element</td><td><code>a[index]</code></td></tr><tr><td>size</td><td>Return size</td><td><code>size()</code></td></tr><tr><td>swap</td><td>Swap content</td><td><code>swap(other)</code></td></tr>`,
+                algorithms: `<div class="card"><p>Array supports all STL algorithms that vector supports since it provides random access iterators. All algorithms from the vector section apply with identical syntax.</p></div>`
+            },
+            {
+                id: "forward-list", title: "Forward List", icon: ICONS.forward_list,
+                declarations: `// Default (empty forward_list)
+forward_list<int> fl1;
+
+// From an initializer list (C++11)
+forward_list<double> fl2 = {3.14, 1.618, 2.718};
+
+// With initial size and value
+forward_list<int> fl3(5, 10); // 5 integers with value 10
+
+// From another forward_list (copy)
+forward_list<double> fl4(fl2);`,
+                structure: `<ul><li><strong>Storage:</strong> Singly-linked list of nodes (forward pointers only)</li><li><strong>Memory Layout:</strong> Each element in separate node with pointer to next only</li><li><strong>Access Pattern:</strong> Forward sequential access only, O(n) to reach position</li><li><strong>Cache Performance:</strong> Poor due to non-contiguous memory allocation</li></ul>`,
+                functions: `<tr><td>assign</td><td>Assign new content</td><td><code>assign(count, value)</code></td></tr><tr><td>before_begin</td><td>Return iterator to before beginning</td><td><code>before_begin()</code></td></tr><tr><td>clear</td><td>Clear all elements</td><td><code>clear()</code></td></tr><tr><td>emplace_after</td><td>Construct and insert element after position</td><td><code>emplace_after(it, args...)</code></td></tr><tr><td>emplace_front</td><td>Construct and insert element at beginning</td><td><code>emplace_front(args...)</code></td></tr><tr><td>erase_after</td><td>Erase element after position</td><td><code>erase_after(it)</code></td></tr><tr><td>front</td><td>Access first element</td><td><code>front()</code></td></tr><tr><td>insert_after</td><td>Insert elements after position</td><td><code>insert_after(it, value)</code></td></tr><tr><td>merge</td><td>Merge sorted forward_lists</td><td><code>merge(other)</code></td></tr><tr><td>pop_front</td><td>Delete first element</td><td><code>pop_front()</code></td></tr><tr><td>push_front</td><td>Add element at the beginning</td><td><code>push_front(value)</code></td></tr><tr><td>remove</td><td>Remove elements with specific value</td><td><code>remove(value)</code></td></tr><tr><td>reverse</td><td>Reverse the order of elements</td><td><code>reverse()</code></td></tr><tr><td>sort</td><td>Sort elements</td><td><code>sort()</code></td></tr><tr><td>splice_after</td><td>Transfer elements</td><td><code>splice_after(it, other)</code></td></tr><tr><td>unique</td><td>Remove duplicate values</td><td><code>unique()</code></td></tr>`,
+                algorithms: `<div class="card"><p>Forward list supports algorithms that work with forward iterators only, such as <code>find</code>, <code>count</code>, <code>for_each</code>, and <code>copy</code>.</p></div>`
+            },
+            { 
+                id: "set", title: "Set", icon: ICONS.set,
+                declarations: `// Default (empty set, sorted with operator<)
+set<int> s1;
+
+// From an initializer list (duplicates ignored)
+set<int> s2 = {5, 2, 8, 2, 5}; // Contains {2, 5, 8}
+
+// With a custom comparator (sorted in descending order)
+set<int, greater<int>> s3 = {5, 2, 8}; // Contains {8, 5, 2}`,
+                structure: `<ul><li><strong>Storage:</strong> Balanced binary search tree (usually Red-Black Tree)</li><li><strong>Element Order:</strong> Elements automatically sorted by key</li><li><strong>Access Pattern:</strong> Logarithmic search, insertion, deletion O(log n)</li><li><strong>Uniqueness:</strong> No duplicate elements allowed</li></ul>`,
+                functions: `<tr><td>clear</td><td>Clear all elements</td><td><code>clear()</code></td></tr><tr><td>count</td><td>Count elements with specific key</td><td><code>count(key)</code></td></tr><tr><td>emplace</td><td>Construct and insert element</td><td><code>emplace(args...)</code></td></tr><tr><td>erase</td><td>Erase elements</td><td><code>erase(key)</code></td></tr><tr><td>find</td><td>Find element</td><td><code>find(key)</code></td></tr><tr><td>insert</td><td>Insert elements</td><td><code>insert(value)</code></td></tr><tr><td>lower_bound</td><td>Return iterator to lower bound</td><td><code>lower_bound(key)</code></td></tr><tr><td>upper_bound</td><td>Return iterator to upper bound</td><td><code>upper_bound(key)</code></td></tr>`,
+                algorithms: `<div class="card"><p>Prefer member functions like <code>find()</code> and <code>count()</code> over generic algorithms for better performance. Supports algorithms for sorted ranges like <code>set_union</code> and <code>set_intersection</code>.</p></div>`
+            },
+            { 
+                id: "multiset", title: "Multiset", icon: ICONS.multiset,
+                declarations: `// Default (empty multiset)
+multiset<int> ms1;
+
+// From an initializer list (duplicates are kept)
+multiset<int> ms2 = {5, 2, 8, 2, 5}; // Contains {2, 2, 5, 5, 8}
+
+// With a custom comparator
+multiset<int, greater<int>> ms3 = {5, 2, 8, 2}; // {8, 5, 2, 2}`,
+                structure: `<ul><li><strong>Storage:</strong> Balanced binary search tree</li><li><strong>Element Order:</strong> Elements automatically sorted by key</li><li><strong>Uniqueness:</strong> Duplicate elements are allowed</li></ul>`,
+                functions: `<tr><td>count</td><td>Count elements with specific key</td><td><code>count(key)</code></td></tr><tr><td>equal_range</td><td>Get range of equal elements</td><td><code>equal_range(key)</code></td></tr><tr><td>find</td><td>Find element</td><td><code>find(key)</code></td></tr><tr><td>insert</td><td>Insert elements</td><td><code>insert(value)</code></td></tr><tr><td>lower_bound</td><td>Return iterator to lower bound</td><td><code>lower_bound(key)</code></td></tr><tr><td>upper_bound</td><td>Return iterator to upper bound</td><td><code>upper_bound(key)</code></td></tr>`,
+                algorithms: `<div class="card"><p>Supports the same algorithms as <code>set</code>, but with duplicate key handling. <code>equal_range</code> is particularly useful.</p></div>`
+            },
+            {
+                id: "unordered-set", title: "Unordered Set", icon: ICONS.unordered,
+                declarations: `// Default (empty unordered_set)
+unordered_set<string> us1;
+
+// From an initializer list
+unordered_set<int> us2 = {10, 20, 5, 15, 10}; // {5, 10, 15, 20} (order not guaranteed)
+
+// --- Example with a custom type ---
+// 1. Define the custom type
+struct Person {
+    string name;
+    int age;
+};
+
+// 2. Define an equality predicate
+struct PersonEqual {
+    bool operator()(const Person& a, const Person& b) const {
+        return a.name == b.name && a.age == b.age;
+    }
+};
+
+// 3. Define a hash function
+struct PersonHash {
+    size_t operator()(const Person& p) const {
+        // Combine hashes of members
+        size_t h1 = hash<string>()(p.name);
+        size_t h2 = hash<int>()(p.age);
+        return h1 ^ (h2 << 1); // A simple way to combine hashes
+    }
+};
+
+// 4. Declare the unordered_set using the custom types
+unordered_set<Person, PersonHash, PersonEqual> us3;
+us3.insert({"Alice", 25});
+us3.insert({"Bob", 30});`,
+                structure: `<ul><li><strong>Storage:</strong> Hash table with separate chaining</li><li><strong>Element Order:</strong> No guaranteed order</li><li><strong>Access Pattern:</strong> Average O(1) for search/insert/delete</li><li><strong>Uniqueness:</strong> No duplicate elements allowed</li></ul>`,
+                functions: `<tr><td>bucket_count</td><td>Return number of buckets</td><td><code>bucket_count()</code></td></tr><tr><td>count</td><td>Count elements with specific key</td><td><code>count(key)</code></td></tr><tr><td>find</td><td>Find element</td><td><code>find(key)</code></td></tr><tr><td>load_factor</td><td>Return load factor</td><td><code>load_factor()</code></td></tr><tr><td>rehash</td><td>Set number of buckets</td><td><code>rehash(count)</code></td></tr><tr><td>reserve</td><td>Request a capacity change</td><td><code>reserve(count)</code></td></tr>`,
+                algorithms: `<div class="card"><p>Limited algorithm support due to unordered nature. Always prefer member functions like <code>find()</code> and <code>count()</code> for performance.</p></div>`
+            },
+            { 
+                id: "map", title: "Map", icon: ICONS.map,
+                declarations: `// Default (empty map)
+map<string, int> m1;
+
+// From an initializer list of pairs (C++11)
+map<string, int> m2 = {
+    {"Alice", 25},
+    {"Bob", 30}
+};
+
+// With a custom key comparator (sorted by string length)
+struct CompareLength {
+    bool operator()(const string& a, const string& b) const {
+        return a.length() < b.length();
+    }
+};
+map<string, int, CompareLength> m3 = {
+    {"one", 1},
+    {"three", 3},
+    {"two", 2}
+};
+// m3 now contains: { {"one", 1}, {"two", 2}, {"three", 3} }`,
+                structure: `<ul><li><strong>Storage:</strong> Balanced binary search tree of key-value pairs</li><li><strong>Element Order:</strong> Elements sorted by key</li><li><strong>Access Pattern:</strong> Logarithmic search, insertion, deletion O(log n)</li><li><strong>Uniqueness:</strong> Keys must be unique</li></ul>`,
+                functions: `<tr><td>at</td><td>Access element with bounds checking</td><td><code>at(key)</code></td></tr><tr><td>count</td><td>Count elements with specific key</td><td><code>count(key)</code></td></tr><tr><td>emplace</td><td>Construct and insert element</td><td><code>emplace(args...)</code></td></tr><tr><td>find</td><td>Find element</td><td><code>find(key)</code></td></tr><tr><td>insert</td><td>Insert elements</td><td><code>insert({key, value})</code></td></tr><tr><td>operator[]</td><td>Access or insert element</td><td><code>m[key]</code></td></tr>`,
+                algorithms: `<div class="card"><p>Prefer member functions for key-based lookups. Generic algorithms like <code>for_each</code> can be used to iterate over key-value pairs.</p></div>`
+            },
+            { 
+                id: "multimap", title: "Multimap", icon: ICONS.multimap,
+                declarations: `// Default (empty multimap)
+multimap<char, int> mm1;
+
+// From an initializer list (duplicate keys allowed)
+multimap<char, int> mm2 = {
+    {'a', 1},
+    {'b', 2},
+    {'a', 3}
+};`,
+                structure: `<ul><li><strong>Storage:</strong> Balanced binary search tree of key-value pairs</li><li><strong>Element Order:</strong> Elements sorted by key</li><li><strong>Uniqueness:</strong> Keys can be duplicated</li></ul>`,
+                functions: `<tr><td>count</td><td>Count elements with specific key</td><td><code>count(key)</code></td></tr><tr><td>equal_range</td><td>Get range of equal elements</td><td><code>equal_range(key)</code></td></tr><tr><td>find</td><td>Find element</td><td><code>find(key)</code></td></tr><tr><td>insert</td><td>Insert elements</td><td><code>insert({key, value})</code></td></tr>`,
+                algorithms: `<div class="card"><p>Same as <code>map</code>, but with duplicate key handling. Lacks <code>operator[]</code> and <code>at()</code>.</p></div>`
+            },
+            { 
+                id: "unordered-map", title: "Unordered Map", icon: ICONS.unordered,
+                declarations: `// Default (empty unordered_map)
+unordered_map<string, int> um1;
+
+// From an initializer list
+unordered_map<string, int> um2 = {
+    {"CPU", 120},
+    {"GPU", 450}
+};
+
+// --- Example with a custom key type ---
+// 1. Define the custom key type
+struct Point {
+    int x, y;
+};
+
+// 2. Define an equality predicate for the key
+struct PointEqual {
+    bool operator()(const Point& a, const Point& b) const {
+        return a.x == b.x && a.y == b.y;
+    }
+};
+
+// 3. Define a hash function for the key
+struct PointHash {
+    size_t operator()(const Point& p) const {
+        size_t h1 = hash<int>()(p.x);
+        size_t h2 = hash<int>()(p.y);
+        return h1 ^ (h2 << 1); // Combine hashes
+    }
+};
+
+// 4. Declare the unordered_map and insert data
+unordered_map<Point, string, PointHash, PointEqual> city_map;
+city_map.insert({{10, 20}, "New York"});
+city_map.insert({{30, 40}, "Los Angeles"});`,
+                structure: `<ul><li><strong>Storage:</strong> Hash table with separate chaining for key-value pairs</li><li><strong>Element Order:</strong> No guaranteed order</li><li><strong>Access Pattern:</strong> Average O(1)</li><li><strong>Uniqueness:</strong> Keys must be unique</li></ul>`,
+                functions: `<tr><td>at</td><td>Access element with bounds checking</td><td><code>at(key)</code></td></tr><tr><td>bucket_count</td><td>Return number of buckets</td><td><code>bucket_count()</code></td></tr><tr><td>count</td><td>Count elements with specific key</td><td><code>count(key)</code></td></tr><tr><td>find</td><td>Find element</td><td><code>find(key)</code></td></tr><tr><td>load_factor</td><td>Return load factor</td><td><code>load_factor()</code></td></tr><tr><td>operator[]</td><td>Access or insert element</td><td><code>um[key]</code></td></tr><tr><td>rehash</td><td>Set number of buckets</td><td><code>rehash(count)</code></td></tr>`,
+                algorithms: `<div class="card"><p>Limited algorithm support. Always prefer member functions for performance.</p></div>`
+            },
+            { 
+                id: "unordered-multimap", title: "Unordered Multimap", icon: ICONS.unordered,
+                 declarations: `// Default (empty unordered_multimap)
+unordered_multimap<string, int> umm1;
+
+// From an initializer list (duplicate keys allowed)
+unordered_multimap<string, int> umm2 = {
+    {"course", 101},
+    {"grade", 95},
+    {"course", 202}
+};`,
+                structure: `<ul><li><strong>Storage:</strong> Hash table with separate chaining for key-value pairs</li><li><strong>Element Order:</strong> No guaranteed order</li><li><strong>Uniqueness:</strong> Keys can be duplicated</li></ul>`,
+                functions: `<tr><td>bucket_count</td><td>Return number of buckets</td><td><code>bucket_count()</code></td></tr><tr><td>count</td><td>Count elements with specific key</td><td><code>count(key)</code></td></tr><tr><td>equal_range</td><td>Get range of equal elements</td><td><code>equal_range(key)</code></td></tr><tr><td>find</td><td>Find element</td><td><code>find(key)</code></td></tr><tr><td>insert</td><td>Insert elements</td><td><code>insert({key, value})</code></td></tr>`,
+                algorithms: `<div class="card"><p>Same as <code>unordered_map</code>, but for duplicate keys. Lacks <code>operator[]</code> and <code>at()</code>.</p></div>`
+            },
+            { 
+                id: "stack", title: "Stack", icon: ICONS.stack,
+                declarations: `// Default stack (uses deque underneath)
+stack<int> s1;
+
+// Stack using a vector as the underlying container
+stack<int, vector<int>> s2;
+
+// Stack using a list as the underlying container
+stack<int, list<int>> s3;`,
+                structure: `<ul><li><strong>Storage:</strong> Container adapter (typically uses deque)</li><li><strong>Element Order:</strong> LIFO (Last In, First Out)</li><li><strong>Access Pattern:</strong> Only top element accessible, O(1) operations</li></ul>`,
+                functions: `<tr><td>empty</td><td>Test whether stack is empty</td><td><code>empty()</code></td></tr><tr><td>emplace</td><td>Construct and insert element at top</td><td><code>emplace(args...)</code></td></tr><tr><td>pop</td><td>Remove top element</td><td><code>pop()</code></td></tr><tr><td>push</td><td>Insert element at top</td><td><code>push(value)</code></td></tr><tr><td>size</td><td>Return size</td><td><code>size()</code></td></tr><tr><td>top</td><td>Access top element</td><td><code>top()</code></td></tr>`,
+                algorithms: `<div class="card"><p>Stack does not provide iterators, so generic STL algorithms cannot be directly applied.</p></div>`
+            },
+            { 
+                id: "queue", title: "Queue", icon: ICONS.queue,
+                declarations: `// Default queue (uses deque underneath)
+queue<int> q1;
+
+// Queue using a list as the underlying container
+// (vector cannot be used as it lacks pop_front)
+queue<int, list<int>> q2;`,
+                structure: `<ul><li><strong>Storage:</strong> Container adapter (typically uses deque)</li><li><strong>Element Order:</strong> FIFO (First In, First Out)</li><li><strong>Access Pattern:</strong> Front and back accessible, O(1) operations</li></ul>`,
+                functions: `<tr><td>back</td><td>Access last element</td><td><code>back()</code></td></tr><tr><td>empty</td><td>Test whether queue is empty</td><td><code>empty()</code></td></tr><tr><td>emplace</td><td>Construct and insert element at back</td><td><code>emplace(args...)</code></td></tr><tr><td>front</td><td>Access next element</td><td><code>front()</code></td></tr><tr><td>pop</td><td>Remove next element</td><td><code>pop()</code></td></tr><tr><td>push</td><td>Insert element at back</td><td><code>push(value)</code></td></tr>`,
+                algorithms: `<div class="card"><p>Queue does not provide iterators, so generic STL algorithms cannot be directly applied.</p></div>`
+            },
+            { 
+                id: "priority-queue", title: "Priority Queue", icon: ICONS.priority_queue,
+                declarations: `// Max-heap (default, largest element is top)
+priority_queue<int> max_heap;
+max_heap.push(10); max_heap.push(30); max_heap.push(20); // top is 30
+
+// Min-heap (smallest element is top)
+priority_queue<int, vector<int>, greater<int>> min_heap;
+min_heap.push(10); min_heap.push(30); min_heap.push(20); // top is 10
+
+// --- Example with a custom type and comparator ---
+// 1. Define the custom type
+struct Task {
+    int priority;
+    string name;
+};
+
+// 2. Define the comparator (makes a min-heap on priority)
+struct TaskComparator {
+    bool operator()(const Task& a, const Task& b) const {
+        return a.priority > b.priority;
+    }
+};
+
+// 3. Declare the priority_queue and add tasks
+priority_queue<Task, vector<Task>, TaskComparator> task_queue;
+task_queue.push({3, "Low priority task"});
+task_queue.push({1, "High priority task"});
+task_queue.push({2, "Medium priority task"});
+// After this, task_queue.top().name will be "High priority task"`,
+                structure: `<ul><li><strong>Storage:</strong> Container adapter using a heap (typically on a vector)</li><li><strong>Element Order:</strong> Max-heap by default (largest element at top)</li><li><strong>Access Pattern:</strong> Only top element accessible, O(log n) push/pop</li></ul>`,
+                functions: `<tr><td>empty</td><td>Test whether priority queue is empty</td><td><code>empty()</code></td></tr><tr><td>emplace</td><td>Construct and insert element</td><td><code>emplace(args...)</code></td></tr><tr><td>pop</td><td>Remove top element</td><td><code>pop()</code></td></tr><tr><td>push</td><td>Insert element</td><td><code>push(value)</code></td></tr><tr><td>top</td><td>Access top element</td><td><code>top()</code></td></tr>`,
+                algorithms: `<div class="card"><p>Priority queue does not provide iterators, so generic STL algorithms cannot be directly applied.</p></div>`
+            },
+            {
+                id: "summary", title: "Summary Table", icon: ICONS.summary,
+                content: `
+                        <h2><span class="section-icon">${ICONS.summary}</span>Summary Table: Container Characteristics</h2>
+                        <div class="table-wrapper"><table><thead><tr><th>Container</th><th>Internal Structure</th><th>Ordering</th><th>Access Time</th><th>Insert/Delete</th><th>Memory Layout</th></tr></thead>
+                        <tbody>
+                            <tr><td>vector</td><td>Dynamic array</td><td>Insertion order</td><td>O(1) random</td><td>O(1) back, O(n) middle</td><td>Contiguous</td></tr>
+                            <tr><td>list</td><td>Doubly-linked list</td><td>Insertion order</td><td>O(n) sequential</td><td>O(1) anywhere</td><td>Non-contiguous</td></tr>
+                            <tr><td>deque</td><td>Segmented array</td><td>Insertion order</td><td>O(1) random</td><td>O(1) both ends</td><td>Semi-contiguous</td></tr>
+                            <tr><td>array</td><td>Fixed array</td><td>Assignment order</td><td>O(1) random</td><td>N/A</td><td>Contiguous</td></tr>
+                            <tr><td>forward_list</td><td>Singly-linked list</td><td>Insertion order</td><td>O(n) sequential</td><td>O(1) after pos</td><td>Non-contiguous</td></tr>
+                            <tr><td>set/multiset</td><td>Red-Black tree</td><td>Sorted by key</td><td>O(log n)</td><td>O(log n)</td><td>Non-contiguous</td></tr>
+                            <tr><td>unordered_set</td><td>Hash table</td><td>Hash-based</td><td>O(1) avg</td><td>O(1) avg</td><td>Non-contiguous</td></tr>
+                            <tr><td>map/multimap</td><td>Red-Black tree</td><td>Sorted by key</td><td>O(log n)</td><td>O(log n)</td><td>Non-contiguous</td></tr>
+                            <tr><td>unordered_map</td><td>Hash table</td><td>Hash-based</td><td>O(1) avg</td><td>O(1) avg</td><td>Non-contiguous</td></tr>
+                            <tr><td>stack</td><td>Adapter (deque)</td><td>LIFO</td><td>O(1) top</td><td>O(1) top</td><td>Depends on adapter</td></tr>
+                            <tr><td>queue</td><td>Adapter (deque)</td><td>FIFO</td><td>O(1) front/back</td><td>O(1) front/back</td><td>Depends on adapter</td></tr>
+                            <tr><td>priority_queue</td><td>Heap (vector)</td><td>Priority-based</td><td>O(1) top</td><td>O(log n)</td><td>Contiguous</td></tr>
+                        </tbody></table></div>`
+            },
+            {
+                id: "quick-ref", title: "Quick Reference", icon: ICONS.quick_ref,
+                content: `
+                        <h2><span class="section-icon">${ICONS.quick_ref}</span>Quick Reference: When to Use Each Container</h2>
+                        <div class="quick-ref-grid">
+                            <div class="quick-ref-item"><span class="icon">${ICONS.vector}</span><div><strong>vector:</strong> Default choice for most scenarios, random access needed.</div></div>
+                            <div class="quick-ref-item"><span class="icon">${ICONS.list}</span><div><strong>list:</strong> Frequent insertion/deletion in middle, no random access needed.</div></div>
+                            <div class="quick-ref-item"><span class="icon">${ICONS.deque}</span><div><strong>deque:</strong> Need efficient front/back operations with random access.</div></div>
+                            <div class="quick-ref-item"><span class="icon">${ICONS.array}</span><div><strong>array:</strong> Fixed size known at compile time, maximum performance.</div></div>
+                            <div class="quick-ref-item"><span class="icon">${ICONS.forward_list}</span><div><strong>forward_list:</strong> Memory-constrained environments, only forward iteration.</div></div>
+                            <div class="quick-ref-item"><span class="icon">${ICONS.set}</span><div><strong>set/multiset:</strong> Need sorted unique/duplicate elements.</div></div>
+                            <div class="quick-ref-item"><span class="icon">${ICONS.unordered}</span><div><strong>unordered_set:</strong> Fast lookup of unique elements, no ordering needed.</div></div>
+                            <div class="quick-ref-item"><span class="icon">${ICONS.map}</span><div><strong>map/multimap:</strong> Key-value pairs with sorted keys.</div></div>
+                            <div class="quick-ref-item"><span class="icon">${ICONS.unordered}</span><div><strong>unordered_map:</strong> Fast key-value lookup, no key ordering needed.</div></div>
+                            <div class="quick-ref-item"><span class="icon">${ICONS.stack}</span><div><strong>stack:</strong> LIFO operations (e.g., function calls).</div></div>
+                            <div class="quick-ref-item"><span class="icon">${ICONS.queue}</span><div><strong>queue:</strong> FIFO operations (e.g., task scheduling).</div></div>
+                            <div class="quick-ref-item"><span class="icon">${ICONS.priority_queue}</span><div><strong>priority_queue:</strong> Process elements by priority.</div></div>
+                        </div>`
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const mainContent = document.getElementById('mainContent');
+            const sidebarNav = document.getElementById('sidebarNav');
+            
+            const navUl = document.createElement('ul');
+            pageData.forEach(item => {
+                const li = document.createElement('li');
+                // Use href for external links, otherwise use the hash for internal navigation
+                const href = item.isExternal ? item.href : `#${item.id}`;
+                li.innerHTML = `<a href="${href}"><span class="icon-container">${item.icon}</span>${item.title}</a>`;
+                navUl.appendChild(li);
+            });
+            sidebarNav.appendChild(navUl);
+
+            pageData.forEach(item => {
+                if (item.id === 'overview' || item.isExternal) return; 
+
+                let sectionHtml = `<section id="${item.id}" class="content-section">`;
+                
+                if(item.content) {
+                    sectionHtml += item.content;
+                } else {
+                    sectionHtml += `<h2><span class="section-icon">${item.icon}</span>${item.title}</h2>`;
+                    
+                    if (item.declarations) {
+                         if (item.id.startsWith("unordered") || item.id === "priority-queue") {
+                            sectionHtml += `<div class="note-card"><p><strong>Note:</strong> For custom types, ensure you've included necessary headers like <code>&lt;string&gt;</code> and defined the hash/equality/comparator structs before declaring the container.</p></div>`;
+                        }
+                        sectionHtml += `<h3><span class="icon">${ICONS.info}</span>Declaration & Initialization</h3>
+                        <div class="declaration-card">
+                            <div class="declaration-header"><span class="icon">${ICONS.quick_ref}</span>Code Examples</div>
+                            <div class="declaration-content"><pre><code>${item.declarations.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre></div>
+                        </div>`;
+                    }
+                    if (item.structure) {
+                        sectionHtml += `<h3><span class="icon">${ICONS.array}</span>Internal Structure & Organization</h3><div class="card">${item.structure}</div>`;
+                    }
+                    if (item.functions) {
+                        sectionHtml += `<h3><span class="icon">${ICONS.algorithms}</span>Member Functions</h3><div class="table-wrapper"><table><thead><tr><th>Function</th><th>Description</th><th>Syntax</th></tr></thead><tbody>${item.functions}</tbody></table></div>`;
+                    }
+                    if (item.algorithms) {
+                         sectionHtml += `<h3><span class="icon">${ICONS.quick_ref}</span>STL Algorithms</h3>`;
+                        if(Array.isArray(item.algorithms)) {
+                             sectionHtml += `<div class="note-card"><p><strong>Note:</strong> All algorithm examples assume you have included the <code>&lt;algorithm&gt;</code> header (and <code>&lt;numeric&gt;</code> for algorithms like <code>accumulate</code> and <code>iota</code>). Predicate functions are assumed to be defined elsewhere.</p></div>`;
+                             sectionHtml += '<div class="algo-grid">';
+                             item.algorithms.forEach(algo => {
+                                 sectionHtml += `<div class="algo-card"><h4><span class="icon">${algo.icon}</span>${algo.name}</h4><p>${algo.description}</p></div>`;
+                             });
+                             sectionHtml += '</div>';
+                        } else {
+                           sectionHtml += item.algorithms;
+                        }
+                    }
+                }
+                
+                sectionHtml += `</section>`;
+                mainContent.insertAdjacentHTML('beforeend', sectionHtml);
+            });
+            
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const searchBar = document.getElementById('searchBar');
+            const searchResults = document.getElementById('searchResults');
+            const searchToggle = document.getElementById('searchToggle');
+            const searchContainer = document.querySelector('.search-container');
+
+            let isMobile = window.innerWidth <= 1024;
+
+            const setInitialLayoutState = () => {
+                if (isMobile) {
+                    sidebar.classList.add('collapsed');
+                    searchContainer.classList.add('collapsed');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    searchContainer.classList.remove('collapsed');
+                }
+            };
+            
+            setInitialLayoutState();
+
+            window.addEventListener('resize', () => {
+                const newIsMobile = window.innerWidth <= 1024;
+                if (newIsMobile !== isMobile) {
+                    isMobile = newIsMobile;
+                    setInitialLayoutState();
+                }
+            });
+
+            menuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.classList.toggle('collapsed');
+            });
+
+            searchToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                searchContainer.classList.toggle('collapsed');
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!searchBar.contains(e.target)) searchResults.style.display = 'none';
+                if (isMobile && !sidebar.classList.contains('collapsed') && !sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                    sidebar.classList.add('collapsed');
+                }
+            });
+            
+             sidebarNav.addEventListener('click', (e) => {
+                 if (e.target.closest('a') && isMobile && !e.target.closest('a').href.includes('algorithms.html')) {
+                     sidebar.classList.add('collapsed');
+                 }
+            });
+
+            searchBar.addEventListener('input', () => {
+                const query = searchBar.value.toLowerCase().trim();
+                searchResults.innerHTML = '';
+                if (query) {
+                    const filtered = pageData.filter(item => item.title.toLowerCase().includes(query));
+                    if (filtered.length > 0) {
+                        filtered.forEach(item => {
+                            const resultItem = document.createElement('a');
+                            resultItem.href = item.isExternal ? item.href : `#${item.id}`;
+                            resultItem.textContent = item.title;
+                            resultItem.classList.add('search-result-item');
+                            resultItem.addEventListener('click', () => {
+                                searchResults.style.display = 'none';
+                                searchBar.value = '';
+                                if(isMobile) sidebar.classList.add('collapsed');
+                            });
+                            searchResults.appendChild(resultItem);
+                        });
+                        searchResults.style.display = 'block';
+                    } else {
+                        searchResults.style.display = 'none';
+                    }
+                } else {
+                    searchResults.style.display = 'none';
+                }
+            });
+
+            const sections = document.querySelectorAll('.content-section');
+            const navLinks = document.querySelectorAll('#sidebarNav a');
+            
+            document.querySelector('h1 .section-icon').innerHTML = ICONS.overview;
+
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        const navLink = document.querySelector(`#sidebarNav a[href="#${id}"]`);
+                        navLinks.forEach(link => link.classList.remove('active'));
+                        if (navLink) navLink.classList.add('active');
+                    }
+                });
+            }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+
+            sections.forEach(section => observer.observe(section));
+        });
+    </script>
+</body>
+</html>
+
