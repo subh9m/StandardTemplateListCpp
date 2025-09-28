@@ -277,8 +277,9 @@
             border-radius: 50%;
             cursor: pointer;
             font-size: 20px;
-            box-shadow: 0 8px 25px rgba(96, 165, 250, 0.4);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .menu-toggle:active {
+            transform: scale(0.95);
         }
 
         @media (max-width: 1024px) {
@@ -303,6 +304,13 @@
 
     <button class="menu-toggle" id="menuToggle">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+    
+    <button class="menu-toggle" id="fullscreenToggle" style="left: auto; right: 20px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path class="icon-enter-fullscreen" d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+            <path class="icon-exit-fullscreen" d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" style="display: none;"></path>
+        </svg>
     </button>
     
     <div class="container">
@@ -509,6 +517,42 @@
                     sidebar.classList.add('collapsed');
                 }
             });
+
+            // --- Fullscreen Toggle Logic ---
+            const fullscreenToggle = document.getElementById('fullscreenToggle');
+            const enterIcon = fullscreenToggle.querySelector('.icon-enter-fullscreen');
+            const exitIcon = fullscreenToggle.querySelector('.icon-exit-fullscreen');
+
+            function toggleFullscreen() {
+                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                    if (document.documentElement.requestFullscreen) {
+                        document.documentElement.requestFullscreen();
+                    } else if (document.documentElement.webkitRequestFullscreen) { /* Safari */
+                        document.documentElement.webkitRequestFullscreen();
+                    }
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) { /* Safari */
+                        document.webkitExitFullscreen();
+                    }
+                }
+            }
+
+            fullscreenToggle.addEventListener('click', toggleFullscreen);
+
+            function updateFullscreenIcon() {
+                if (document.fullscreenElement || document.webkitFullscreenElement) {
+                    enterIcon.style.display = 'none';
+                    exitIcon.style.display = 'block';
+                } else {
+                    enterIcon.style.display = 'block';
+                    exitIcon.style.display = 'none';
+                }
+            }
+
+            document.addEventListener('fullscreenchange', updateFullscreenIcon);
+            document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
         });
     </script>
 </body>
