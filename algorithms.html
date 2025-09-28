@@ -650,6 +650,15 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
     </button>
 
+    <button class="menu-toggle" id="fullscreenToggle" style="top: auto; bottom: 20px; right: 20px;">
+        <svg id="fullscreenIconOpen" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+        </svg>
+        <svg id="fullscreenIconClose" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+        </svg>
+    </button>
+
     <div class="container">
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">STL Algorithms</div>
@@ -664,8 +673,7 @@
                 </div>
                 <div id="searchResults" class="search-results"></div>
             </div>
-            <!-- Content will be injected by JavaScript -->
-        </main>
+            </main>
     </div>
 
     <script>
@@ -688,182 +696,182 @@
         const algorithmContent = { 
             id: "algorithms", title: "STL Algorithms", icon: ICONS.algorithms,
             content: `
-                    <section id="algorithms-overview" class="content-section">
-                        <h1><span class="section-icon">${ICONS.algorithms}</span>STL Algorithms Reference</h1>
-                        <div class="note-card">
-                            <p><strong>Comprehensive Reference:</strong> This section covers all major C++ STL algorithms from &lt;algorithm&gt;, &lt;numeric&gt;, and newer C++17/C++20 additions. Each algorithm includes syntax, container compatibility, and practical examples.</p>
-                        </div>
+                 <section id="algorithms-overview" class="content-section">
+                     <h1><span class="section-icon">${ICONS.algorithms}</span>STL Algorithms Reference</h1>
+                     <div class="note-card">
+                         <p><strong>Comprehensive Reference:</strong> This section covers all major C++ STL algorithms from &lt;algorithm&gt;, &lt;numeric&gt;, and newer C++17/C++20 additions. Each algorithm includes syntax, container compatibility, and practical examples.</p>
+                     </div>
 
-                        <div class="quick-ref-grid">
-                            <div class="quick-ref-item"><span class="icon">${ICONS.search}</span><div><strong><a href="#non-modifying">Non-Modifying:</a></strong> Search, count, compare operations</div></div>
-                            <div class="quick-ref-item"><span class="icon">${ICONS.modify}</span><div><strong><a href="#modifying">Modifying:</a></strong> Copy, transform, replace operations</div></div>
-                            <div class="quick-ref-item"><span class="icon">${ICONS.partition}</span><div><strong><a href="#partitioning">Partitioning:</a></strong> Divide elements by criteria</div></div>
-                            <div class="quick-ref-item"><span class="icon">${ICONS.sort}</span><div><strong><a href="#sorting">Sorting:</a></strong> Sort and binary search operations</div></div>
-                            <div class="quick-ref-item"><span class="icon">${ICONS.heap}</span><div><strong><a href="#heap">Heap:</a></strong> Heap structure operations</div></div>
-                            <div class="quick-ref-item"><span class="icon">${ICONS.minmax}</span><div><strong><a href="#min-max">Min/Max:</a></strong> Find extremes and clamp values</div></div>
-                            <div class="quick-ref-item"><span class="icon">${ICONS.set_ops}</span><div><strong><a href="#set-ops">Set Operations:</a></strong> Union, intersection, difference</div></div>
-                            <div class="quick-ref-item"><span class="icon">${ICONS.numeric}</span><div><strong><a href="#numeric">Numeric:</a></strong> Mathematical and accumulation</div></div>
-                        </div>
-                    </section>
+                     <div class="quick-ref-grid">
+                         <div class="quick-ref-item"><span class="icon">${ICONS.search}</span><div><strong><a href="#non-modifying">Non-Modifying:</a></strong> Search, count, compare operations</div></div>
+                         <div class="quick-ref-item"><span class="icon">${ICONS.modify}</span><div><strong><a href="#modifying">Modifying:</a></strong> Copy, transform, replace operations</div></div>
+                         <div class="quick-ref-item"><span class="icon">${ICONS.partition}</span><div><strong><a href="#partitioning">Partitioning:</a></strong> Divide elements by criteria</div></div>
+                         <div class="quick-ref-item"><span class="icon">${ICONS.sort}</span><div><strong><a href="#sorting">Sorting:</a></strong> Sort and binary search operations</div></div>
+                         <div class="quick-ref-item"><span class="icon">${ICONS.heap}</span><div><strong><a href="#heap">Heap:</a></strong> Heap structure operations</div></div>
+                         <div class="quick-ref-item"><span class="icon">${ICONS.minmax}</span><div><strong><a href="#min-max">Min/Max:</a></strong> Find extremes and clamp values</div></div>
+                         <div class="quick-ref-item"><span class="icon">${ICONS.set_ops}</span><div><strong><a href="#set-ops">Set Operations:</a></strong> Union, intersection, difference</div></div>
+                         <div class="quick-ref-item"><span class="icon">${ICONS.numeric}</span><div><strong><a href="#numeric">Numeric:</a></strong> Mathematical and accumulation</div></div>
+                     </div>
+                 </section>
 
-                    <section id="non-modifying" class="content-section">
-                        <h3><span class="icon">${ICONS.search}</span>Non-Modifying Sequence Operations</h3>
-                        <div class="card"><div class="table-wrapper">
-                            <table>
-                                <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
-                                <tbody>
-                                    <tr><td><code>for_each</code></td><td>Apply function to each element</td><td><code>for_each(first, last, func)</code></td><td><code>for_each(v.begin(), v.end(), [](int x){...});</code></td></tr>
-                                    <tr><td><code>find</code></td><td>Find first occurrence of value</td><td><code>find(first, last, value)</code></td><td><code>auto it = find(v.begin(), v.end(), 42);</code></td></tr>
-                                    <tr><td><code>find_if</code></td><td>Find first element satisfying predicate</td><td><code>find_if(first, last, pred)</code></td><td><code>find_if(v.begin(), v.end(), is_even);</code></td></tr>
-                                    <tr><td><code>find_if_not</code></td><td>Find first element NOT satisfying predicate</td><td><code>find_if_not(first, last, pred)</code></td><td><code>find_if_not(v.begin(), v.end(), is_positive);</code></td></tr>
-                                    <tr><td><code>count</code></td><td>Count occurrences of value</td><td><code>count(first, last, value)</code></td><td><code>int c = count(v.begin(), v.end(), 5);</code></td></tr>
-                                    <tr><td><code>count_if</code></td><td>Count elements satisfying predicate</td><td><code>count_if(first, last, pred)</code></td><td><code>count_if(v.begin(), v.end(), is_positive);</code></td></tr>
-                                    <tr><td><code>all_of</code></td><td>Test if predicate is true for all</td><td><code>all_of(first, last, pred)</code></td><td><code>all_of(v.begin(), v.end(), is_positive);</code></td></tr>
-                                    <tr><td><code>any_of</code></td><td>Test if predicate is true for any</td><td><code>any_of(first, last, pred)</code></td><td><code>any_of(v.begin(), v.end(), is_negative);</code></td></tr>
-                                    <tr><td><code>none_of</code></td><td>Test if predicate is false for all</td><td><code>none_of(first, last, pred)</code></td><td><code>none_of(v.begin(), v.end(), is_zero);</code></td></tr>
-                                    <tr><td><code>search</code></td><td>Find first occurrence of subsequence</td><td><code>search(f1, l1, f2, l2)</code></td><td><code>search(text.begin(), text.end(), pat.begin(), pat.end());</code></td></tr>
-                                    <tr><td><code>equal</code></td><td>Check if two ranges are equal</td><td><code>equal(f1, l1, f2)</code></td><td><code>equal(v1.begin(), v1.end(), v2.begin());</code></td></tr>
-                                </tbody>
-                            </table>
-                        </div></div>
-                    </section>
+                 <section id="non-modifying" class="content-section">
+                     <h3><span class="icon">${ICONS.search}</span>Non-Modifying Sequence Operations</h3>
+                     <div class="card"><div class="table-wrapper">
+                         <table>
+                             <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
+                             <tbody>
+                                 <tr><td><code>for_each</code></td><td>Apply function to each element</td><td><code>for_each(first, last, func)</code></td><td><code>for_each(v.begin(), v.end(), [](int x){...});</code></td></tr>
+                                 <tr><td><code>find</code></td><td>Find first occurrence of value</td><td><code>find(first, last, value)</code></td><td><code>auto it = find(v.begin(), v.end(), 42);</code></td></tr>
+                                 <tr><td><code>find_if</code></td><td>Find first element satisfying predicate</td><td><code>find_if(first, last, pred)</code></td><td><code>find_if(v.begin(), v.end(), is_even);</code></td></tr>
+                                 <tr><td><code>find_if_not</code></td><td>Find first element NOT satisfying predicate</td><td><code>find_if_not(first, last, pred)</code></td><td><code>find_if_not(v.begin(), v.end(), is_positive);</code></td></tr>
+                                 <tr><td><code>count</code></td><td>Count occurrences of value</td><td><code>count(first, last, value)</code></td><td><code>int c = count(v.begin(), v.end(), 5);</code></td></tr>
+                                 <tr><td><code>count_if</code></td><td>Count elements satisfying predicate</td><td><code>count_if(first, last, pred)</code></td><td><code>count_if(v.begin(), v.end(), is_positive);</code></td></tr>
+                                 <tr><td><code>all_of</code></td><td>Test if predicate is true for all</td><td><code>all_of(first, last, pred)</code></td><td><code>all_of(v.begin(), v.end(), is_positive);</code></td></tr>
+                                 <tr><td><code>any_of</code></td><td>Test if predicate is true for any</td><td><code>any_of(first, last, pred)</code></td><td><code>any_of(v.begin(), v.end(), is_negative);</code></td></tr>
+                                 <tr><td><code>none_of</code></td><td>Test if predicate is false for all</td><td><code>none_of(first, last, pred)</code></td><td><code>none_of(v.begin(), v.end(), is_zero);</code></td></tr>
+                                 <tr><td><code>search</code></td><td>Find first occurrence of subsequence</td><td><code>search(f1, l1, f2, l2)</code></td><td><code>search(text.begin(), text.end(), pat.begin(), pat.end());</code></td></tr>
+                                 <tr><td><code>equal</code></td><td>Check if two ranges are equal</td><td><code>equal(f1, l1, f2)</code></td><td><code>equal(v1.begin(), v1.end(), v2.begin());</code></td></tr>
+                             </tbody>
+                         </table>
+                     </div></div>
+                 </section>
 
-                    <section id="modifying" class="content-section">
-                        <h3><span class="icon">${ICONS.modify}</span>Modifying Sequence Operations</h3>
-                        <div class="card"><div class="table-wrapper">
-                            <table>
-                                <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
-                                <tbody>
-                                    <tr><td><code>copy</code></td><td>Copy elements to destination</td><td><code>copy(first, last, dest)</code></td><td><code>copy(src.begin(), src.end(), dest.begin());</code></td></tr>
-                                    <tr><td><code>copy_if</code></td><td>Copy elements satisfying predicate</td><td><code>copy_if(f, l, dest, pred)</code></td><td><code>copy_if(s.begin(), s.end(), back_inserter(d), is_pos);</code></td></tr>
-                                    <tr><td><code>move</code></td><td>Move elements to destination</td><td><code>move(first, last, dest)</code></td><td><code>move(src.begin(), src.end(), dest.begin());</code></td></tr>
-                                    <tr><td><code>fill</code></td><td>Fill range with value</td><td><code>fill(first, last, value)</code></td><td><code>fill(v.begin(), v.end(), 42);</code></td></tr>
-                                    <tr><td><code>fill_n</code></td><td>Fill n elements with value</td><td><code>fill_n(first, n, value)</code></td><td><code>fill_n(v.begin(), 5, 0);</code></td></tr>
-                                    <tr><td><code>transform</code></td><td>Apply function and store result</td><td><code>transform(f, l, dest, func)</code></td><td><code>transform(v.begin(), v.end(), v.begin(), dbl);</code></td></tr>
-                                    <tr><td><code>replace</code></td><td>Replace occurrences of old_value</td><td><code>replace(f, l, old, new)</code></td><td><code>replace(v.begin(), v.end(), 5, 10);</code></td></tr>
-                                    <tr><td><code>replace_if</code></td><td>Replace elements satisfying predicate</td><td><code>replace_if(f, l, pred, new)</code></td><td><code>replace_if(v.begin(), v.end(), is_neg, 0);</code></td></tr>
-                                    <tr><td><code>remove</code></td><td>Remove elements equal to value</td><td><code>remove(first, last, value)</code></td><td><code>v.erase(remove(v.begin(), v.end(), 42), v.end());</code></td></tr>
-                                    <tr><td><code>remove_if</code></td><td>Remove elements satisfying predicate</td><td><code>remove_if(first, last, pred)</code></td><td><code>v.erase(remove_if(v.begin(), v.end(), is_neg), v.end());</code></td></tr>
-                                    <tr><td><code>unique</code></td><td>Remove consecutive duplicates</td><td><code>unique(first, last)</code></td><td><code>v.erase(unique(v.begin(), v.end()), v.end());</code></td></tr>
-                                    <tr><td><code>reverse</code></td><td>Reverse order of elements</td><td><code>reverse(first, last)</code></td><td><code>reverse(v.begin(), v.end());</code></td></tr>
-                                    <tr><td><code>rotate</code></td><td>Rotate elements in range</td><td><code>rotate(first, middle, last)</code></td><td><code>rotate(v.begin(), v.begin()+3, v.end());</code></td></tr>
-                                    <tr><td><code>shuffle</code></td><td>Randomly shuffle elements</td><td><code>shuffle(first, last, rng)</code></td><td><code>shuffle(v.begin(), v.end(), rng);</code></td></tr>
-                                </tbody>
-                            </table>
-                        </div></div>
-                    </section>
+                 <section id="modifying" class="content-section">
+                     <h3><span class="icon">${ICONS.modify}</span>Modifying Sequence Operations</h3>
+                     <div class="card"><div class="table-wrapper">
+                         <table>
+                             <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
+                             <tbody>
+                                 <tr><td><code>copy</code></td><td>Copy elements to destination</td><td><code>copy(first, last, dest)</code></td><td><code>copy(src.begin(), src.end(), dest.begin());</code></td></tr>
+                                 <tr><td><code>copy_if</code></td><td>Copy elements satisfying predicate</td><td><code>copy_if(f, l, dest, pred)</code></td><td><code>copy_if(s.begin(), s.end(), back_inserter(d), is_pos);</code></td></tr>
+                                 <tr><td><code>move</code></td><td>Move elements to destination</td><td><code>move(first, last, dest)</code></td><td><code>move(src.begin(), src.end(), dest.begin());</code></td></tr>
+                                 <tr><td><code>fill</code></td><td>Fill range with value</td><td><code>fill(first, last, value)</code></td><td><code>fill(v.begin(), v.end(), 42);</code></td></tr>
+                                 <tr><td><code>fill_n</code></td><td>Fill n elements with value</td><td><code>fill_n(first, n, value)</code></td><td><code>fill_n(v.begin(), 5, 0);</code></td></tr>
+                                 <tr><td><code>transform</code></td><td>Apply function and store result</td><td><code>transform(f, l, dest, func)</code></td><td><code>transform(v.begin(), v.end(), v.begin(), dbl);</code></td></tr>
+                                 <tr><td><code>replace</code></td><td>Replace occurrences of old_value</td><td><code>replace(f, l, old, new)</code></td><td><code>replace(v.begin(), v.end(), 5, 10);</code></td></tr>
+                                 <tr><td><code>replace_if</code></td><td>Replace elements satisfying predicate</td><td><code>replace_if(f, l, pred, new)</code></td><td><code>replace_if(v.begin(), v.end(), is_neg, 0);</code></td></tr>
+                                 <tr><td><code>remove</code></td><td>Remove elements equal to value</td><td><code>remove(first, last, value)</code></td><td><code>v.erase(remove(v.begin(), v.end(), 42), v.end());</code></td></tr>
+                                 <tr><td><code>remove_if</code></td><td>Remove elements satisfying predicate</td><td><code>remove_if(first, last, pred)</code></td><td><code>v.erase(remove_if(v.begin(), v.end(), is_neg), v.end());</code></td></tr>
+                                 <tr><td><code>unique</code></td><td>Remove consecutive duplicates</td><td><code>unique(first, last)</code></td><td><code>v.erase(unique(v.begin(), v.end()), v.end());</code></td></tr>
+                                 <tr><td><code>reverse</code></td><td>Reverse order of elements</td><td><code>reverse(first, last)</code></td><td><code>reverse(v.begin(), v.end());</code></td></tr>
+                                 <tr><td><code>rotate</code></td><td>Rotate elements in range</td><td><code>rotate(first, middle, last)</code></td><td><code>rotate(v.begin(), v.begin()+3, v.end());</code></td></tr>
+                                 <tr><td><code>shuffle</code></td><td>Randomly shuffle elements</td><td><code>shuffle(first, last, rng)</code></td><td><code>shuffle(v.begin(), v.end(), rng);</code></td></tr>
+                             </tbody>
+                         </table>
+                     </div></div>
+                 </section>
 
-                    <section id="partitioning" class="content-section">
-                        <h3><span class="icon">${ICONS.partition}</span>Partitioning Operations</h3>
-                        <div class="card"><div class="table-wrapper">
-                            <table>
-                                <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
-                                <tbody>
-                                    <tr><td><code>partition</code></td><td>Partition range by predicate (not stable)</td><td><code>partition(f, l, pred)</code></td><td><code>partition(v.begin(), v.end(), is_pos);</code></td></tr>
-                                    <tr><td><code>stable_partition</code></td><td>Partition while preserving order</td><td><code>stable_partition(f, l, pred)</code></td><td><code>stable_partition(v.begin(), v.end(), is_even);</code></td></tr>
-                                    <tr><td><code>is_partitioned</code></td><td>Test if range is partitioned</td><td><code>is_partitioned(f, l, pred)</code></td><td><code>is_partitioned(v.begin(), v.end(), is_pos);</code></td></tr>
-                                    <tr><td><code>partition_point</code></td><td>Find partition point</td><td><code>partition_point(f, l, pred)</code></td><td><code>partition_point(v.begin(), v.end(), is_pos);</code></td></tr>
-                                </tbody>
-                            </table>
-                        </div></div>
-                    </section>
+                 <section id="partitioning" class="content-section">
+                     <h3><span class="icon">${ICONS.partition}</span>Partitioning Operations</h3>
+                     <div class="card"><div class="table-wrapper">
+                         <table>
+                             <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
+                             <tbody>
+                                 <tr><td><code>partition</code></td><td>Partition range by predicate (not stable)</td><td><code>partition(f, l, pred)</code></td><td><code>partition(v.begin(), v.end(), is_pos);</code></td></tr>
+                                 <tr><td><code>stable_partition</code></td><td>Partition while preserving order</td><td><code>stable_partition(f, l, pred)</code></td><td><code>stable_partition(v.begin(), v.end(), is_even);</code></td></tr>
+                                 <tr><td><code>is_partitioned</code></td><td>Test if range is partitioned</td><td><code>is_partitioned(f, l, pred)</code></td><td><code>is_partitioned(v.begin(), v.end(), is_pos);</code></td></tr>
+                                 <tr><td><code>partition_point</code></td><td>Find partition point</td><td><code>partition_point(f, l, pred)</code></td><td><code>partition_point(v.begin(), v.end(), is_pos);</code></td></tr>
+                             </tbody>
+                         </table>
+                     </div></div>
+                 </section>
 
-                    <section id="sorting" class="content-section">
-                        <h3><span class="icon">${ICONS.sort}</span>Sorting and Binary Search</h3>
-                        <div class="card"><div class="table-wrapper">
-                            <table>
-                                <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
-                                <tbody>
-                                    <tr><td><code>sort</code></td><td>Sort elements (not stable)</td><td><code>sort(first, last [, comp])</code></td><td><code>sort(v.begin(), v.end(), greater<int>());</code></td></tr>
-                                    <tr><td><code>stable_sort</code></td><td>Sort while preserving equal order</td><td><code>stable_sort(f, l [, comp])</code></td><td><code>stable_sort(s.begin(), s.end(), comp_grade);</code></td></tr>
-                                    <tr><td><code>partial_sort</code></td><td>Partially sort (first n elements)</td><td><code>partial_sort(f, m, l)</code></td><td><code>partial_sort(v.begin(), v.begin()+5, v.end());</code></td></tr>
-                                    <tr><td><code>nth_element</code></td><td>Find nth element in sorted order</td><td><code>nth_element(f, nth, l)</code></td><td><code>nth_element(v.begin(), v.begin() + v.size()/2, v.end());</code></td></tr>
-                                    <tr><td><code>binary_search</code></td><td>Test if value exists in sorted range</td><td><code>binary_search(f, l, val)</code></td><td><code>binary_search(v.begin(), v.end(), 42);</code></td></tr>
-                                    <tr><td><code>lower_bound</code></td><td>Find insertion point</td><td><code>lower_bound(f, l, val)</code></td><td><code>lower_bound(v.begin(), v.end(), 42);</code></td></tr>
-                                    <tr><td><code>upper_bound</code></td><td>Find position after last occurrence</td><td><code>upper_bound(f, l, val)</code></td><td><code>upper_bound(v.begin(), v.end(), 42);</code></td></tr>
-                                    <tr><td><code>equal_range</code></td><td>Find range of equal elements</td><td><code>equal_range(f, l, val)</code></td><td><code>auto p = equal_range(v.begin(), v.end(), 42);</code></td></tr>
-                                    <tr><td><code>is_sorted</code></td><td>Check if range is sorted</td><td><code>is_sorted(first, last)</code></td><td><code>is_sorted(v.begin(), v.end());</code></td></tr>
-                                </tbody>
-                            </table>
-                        </div></div>
-                    </section>
+                 <section id="sorting" class="content-section">
+                     <h3><span class="icon">${ICONS.sort}</span>Sorting and Binary Search</h3>
+                     <div class="card"><div class="table-wrapper">
+                         <table>
+                             <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
+                             <tbody>
+                                 <tr><td><code>sort</code></td><td>Sort elements (not stable)</td><td><code>sort(first, last [, comp])</code></td><td><code>sort(v.begin(), v.end(), greater<int>());</code></td></tr>
+                                 <tr><td><code>stable_sort</code></td><td>Sort while preserving equal order</td><td><code>stable_sort(f, l [, comp])</code></td><td><code>stable_sort(s.begin(), s.end(), comp_grade);</code></td></tr>
+                                 <tr><td><code>partial_sort</code></td><td>Partially sort (first n elements)</td><td><code>partial_sort(f, m, l)</code></td><td><code>partial_sort(v.begin(), v.begin()+5, v.end());</code></td></tr>
+                                 <tr><td><code>nth_element</code></td><td>Find nth element in sorted order</td><td><code>nth_element(f, nth, l)</code></td><td><code>nth_element(v.begin(), v.begin() + v.size()/2, v.end());</code></td></tr>
+                                 <tr><td><code>binary_search</code></td><td>Test if value exists in sorted range</td><td><code>binary_search(f, l, val)</code></td><td><code>binary_search(v.begin(), v.end(), 42);</code></td></tr>
+                                 <tr><td><code>lower_bound</code></td><td>Find insertion point</td><td><code>lower_bound(f, l, val)</code></td><td><code>lower_bound(v.begin(), v.end(), 42);</code></td></tr>
+                                 <tr><td><code>upper_bound</code></td><td>Find position after last occurrence</td><td><code>upper_bound(f, l, val)</code></td><td><code>upper_bound(v.begin(), v.end(), 42);</code></td></tr>
+                                 <tr><td><code>equal_range</code></td><td>Find range of equal elements</td><td><code>equal_range(f, l, val)</code></td><td><code>auto p = equal_range(v.begin(), v.end(), 42);</code></td></tr>
+                                 <tr><td><code>is_sorted</code></td><td>Check if range is sorted</td><td><code>is_sorted(first, last)</code></td><td><code>is_sorted(v.begin(), v.end());</code></td></tr>
+                             </tbody>
+                         </table>
+                     </div></div>
+                 </section>
 
-                    <section id="heap" class="content-section">
-                        <h3><span class="icon">${ICONS.heap}</span>Heap Operations</h3>
-                        <div class="card"><div class="table-wrapper">
-                            <table>
-                                <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
-                                <tbody>
-                                    <tr><td><code>make_heap</code></td><td>Create heap from range</td><td><code>make_heap(first, last)</code></td><td><code>make_heap(v.begin(), v.end());</code></td></tr>
-                                    <tr><td><code>push_heap</code></td><td>Insert element into heap</td><td><code>push_heap(first, last)</code></td><td><code>v.push_back(42); push_heap(v.begin(), v.end());</code></td></tr>
-                                    <tr><td><code>pop_heap</code></td><td>Remove largest element from heap</td><td><code>pop_heap(first, last)</code></td><td><code>pop_heap(v.begin(), v.end()); v.pop_back();</code></td></tr>
-                                    <tr><td><code>sort_heap</code></td><td>Sort heap (destroys heap property)</td><td><code>sort_heap(first, last)</code></td><td><code>sort_heap(v.begin(), v.end());</code></td></tr>
-                                    <tr><td><code>is_heap</code></td><td>Check if range is a heap</td><td><code>is_heap(first, last)</code></td><td><code>is_heap(v.begin(), v.end());</code></td></tr>
-                                </tbody>
-                            </table>
-                        </div></div>
-                    </section>
+                 <section id="heap" class="content-section">
+                     <h3><span class="icon">${ICONS.heap}</span>Heap Operations</h3>
+                     <div class="card"><div class="table-wrapper">
+                         <table>
+                             <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
+                             <tbody>
+                                 <tr><td><code>make_heap</code></td><td>Create heap from range</td><td><code>make_heap(first, last)</code></td><td><code>make_heap(v.begin(), v.end());</code></td></tr>
+                                 <tr><td><code>push_heap</code></td><td>Insert element into heap</td><td><code>push_heap(first, last)</code></td><td><code>v.push_back(42); push_heap(v.begin(), v.end());</code></td></tr>
+                                 <tr><td><code>pop_heap</code></td><td>Remove largest element from heap</td><td><code>pop_heap(first, last)</code></td><td><code>pop_heap(v.begin(), v.end()); v.pop_back();</code></td></tr>
+                                 <tr><td><code>sort_heap</code></td><td>Sort heap (destroys heap property)</td><td><code>sort_heap(first, last)</code></td><td><code>sort_heap(v.begin(), v.end());</code></td></tr>
+                                 <tr><td><code>is_heap</code></td><td>Check if range is a heap</td><td><code>is_heap(first, last)</code></td><td><code>is_heap(v.begin(), v.end());</code></td></tr>
+                             </tbody>
+                         </table>
+                     </div></div>
+                 </section>
 
-                    <section id="min-max" class="content-section">
-                        <h3><span class="icon">${ICONS.minmax}</span>Min/Max Operations</h3>
-                        <div class="card"><div class="table-wrapper">
-                            <table>
-                                <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
-                                <tbody>
-                                    <tr><td><code>min</code></td><td>Return smaller of two values</td><td><code>min(a, b)</code></td><td><code>int s = min(5, 10);</code></td></tr>
-                                    <tr><td><code>max</code></td><td>Return larger of two values</td><td><code>max(a, b)</code></td><td><code>int l = max(5, 10);</code></td></tr>
-                                    <tr><td><code>minmax</code></td><td>Return pair of min and max</td><td><code>minmax(a, b)</code></td><td><code>auto p = minmax(5, 10);</code></td></tr>
-                                    <tr><td><code>min_element</code></td><td>Find iterator to smallest element</td><td><code>min_element(first, last)</code></td><td><code>min_element(v.begin(), v.end());</code></td></tr>
-                                    <tr><td><code>max_element</code></td><td>Find iterator to largest element</td><td><code>max_element(first, last)</code></td><td><code>max_element(v.begin(), v.end());</code></td></tr>
-                                    <tr><td><code>minmax_element</code></td><td>Find both min and max elements</td><td><code>minmax_element(first, last)</code></td><td><code>auto p = minmax_element(v.begin(), v.end());</code></td></tr>
-                                    <tr><td><code>clamp</code></td><td>Clamp value between bounds (C++17)</td><td><code>clamp(val, lo, hi)</code></td><td><code>int c = clamp(x, 0, 100);</code></td></tr>
-                                </tbody>
-                            </table>
-                        </div></div>
-                    </section>
+                 <section id="min-max" class="content-section">
+                     <h3><span class="icon">${ICONS.minmax}</span>Min/Max Operations</h3>
+                     <div class="card"><div class="table-wrapper">
+                         <table>
+                             <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
+                             <tbody>
+                                 <tr><td><code>min</code></td><td>Return smaller of two values</td><td><code>min(a, b)</code></td><td><code>int s = min(5, 10);</code></td></tr>
+                                 <tr><td><code>max</code></td><td>Return larger of two values</td><td><code>max(a, b)</code></td><td><code>int l = max(5, 10);</code></td></tr>
+                                 <tr><td><code>minmax</code></td><td>Return pair of min and max</td><td><code>minmax(a, b)</code></td><td><code>auto p = minmax(5, 10);</code></td></tr>
+                                 <tr><td><code>min_element</code></td><td>Find iterator to smallest element</td><td><code>min_element(first, last)</code></td><td><code>min_element(v.begin(), v.end());</code></td></tr>
+                                 <tr><td><code>max_element</code></td><td>Find iterator to largest element</td><td><code>max_element(first, last)</code></td><td><code>max_element(v.begin(), v.end());</code></td></tr>
+                                 <tr><td><code>minmax_element</code></td><td>Find both min and max elements</td><td><code>minmax_element(first, last)</code></td><td><code>auto p = minmax_element(v.begin(), v.end());</code></td></tr>
+                                 <tr><td><code>clamp</code></td><td>Clamp value between bounds (C++17)</td><td><code>clamp(val, lo, hi)</code></td><td><code>int c = clamp(x, 0, 100);</code></td></tr>
+                             </tbody>
+                         </table>
+                     </div></div>
+                 </section>
 
-                    <section id="set-ops" class="content-section">
-                        <h3><span class="icon">${ICONS.set_ops}</span>Set Operations (on Sorted Ranges)</h3>
-                        <div class="card"><div class="table-wrapper">
-                            <table>
-                                <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
-                                <tbody>
-                                    <tr><td><code>set_union</code></td><td>Compute union of sorted ranges</td><td><code>set_union(f1,l1,f2,l2,dest)</code></td><td><code>set_union(s1.begin(), s1.end(), s2.begin(), s2.end(), back_inserter(res));</code></td></tr>
-                                    <tr><td><code>set_intersection</code></td><td>Compute intersection of sorted ranges</td><td><code>set_intersection(f1,l1,f2,l2,dest)</code></td><td><code>set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), back_inserter(com));</code></td></tr>
-                                    <tr><td><code>set_difference</code></td><td>Compute difference of sorted ranges</td><td><code>set_difference(f1,l1,f2,l2,dest)</code></td><td><code>set_difference(s1.begin(), s1.end(), s2.begin(), s2.end(), back_inserter(diff));</code></td></tr>
-                                    <tr><td><code>includes</code></td><td>Test if one sorted range includes another</td><td><code>includes(f1, l1, f2, l2)</code></td><td><code>includes(s1.begin(), s1.end(), s2.begin(), s2.end());</code></td></tr>
-                                </tbody>
-                            </table>
-                        </div></div>
-                    </section>
+                 <section id="set-ops" class="content-section">
+                     <h3><span class="icon">${ICONS.set_ops}</span>Set Operations (on Sorted Ranges)</h3>
+                     <div class="card"><div class="table-wrapper">
+                         <table>
+                             <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
+                             <tbody>
+                                 <tr><td><code>set_union</code></td><td>Compute union of sorted ranges</td><td><code>set_union(f1,l1,f2,l2,dest)</code></td><td><code>set_union(s1.begin(), s1.end(), s2.begin(), s2.end(), back_inserter(res));</code></td></tr>
+                                 <tr><td><code>set_intersection</code></td><td>Compute intersection of sorted ranges</td><td><code>set_intersection(f1,l1,f2,l2,dest)</code></td><td><code>set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), back_inserter(com));</code></td></tr>
+                                 <tr><td><code>set_difference</code></td><td>Compute difference of sorted ranges</td><td><code>set_difference(f1,l1,f2,l2,dest)</code></td><td><code>set_difference(s1.begin(), s1.end(), s2.begin(), s2.end(), back_inserter(diff));</code></td></tr>
+                                 <tr><td><code>includes</code></td><td>Test if one sorted range includes another</td><td><code>includes(f1, l1, f2, l2)</code></td><td><code>includes(s1.begin(), s1.end(), s2.begin(), s2.end());</code></td></tr>
+                             </tbody>
+                         </table>
+                     </div></div>
+                 </section>
 
-                    <section id="numeric" class="content-section">
-                        <h3><span class="icon">${ICONS.numeric}</span>Numeric Algorithms</h3>
-                        <div class="card"><div class="table-wrapper">
-                            <table>
-                                <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
-                                <tbody>
-                                    <tr><td><code>accumulate</code></td><td>Compute sum or fold of range</td><td><code>accumulate(f, l, init [, op])</code></td><td><code>int sum = accumulate(v.begin(), v.end(), 0);</code></td></tr>
-                                    <tr><td><code>reduce</code></td><td>Parallel friendly reduction (C++17)</td><td><code>reduce(f, l [, init] [, op])</code></td><td><code>int sum = reduce(v.begin(), v.end());</code></td></tr>
-                                    <tr><td><code>inner_product</code></td><td>Compute inner product of ranges</td><td><code>inner_product(f1, l1, f2, init)</code></td><td><code>int dot = inner_product(v1.begin(), v1.end(), v2.begin(), 0);</code></td></tr>
-                                    <tr><td><code>partial_sum</code></td><td>Compute partial sums</td><td><code>partial_sum(first, last, dest)</code></td><td><code>partial_sum(v.begin(), v.end(), back_inserter(p));</code></td></tr>
-                                    <tr><td><code>iota</code></td><td>Fill range with successive increments</td><td><code>iota(first, last, value)</code></td><td><code>iota(v.begin(), v.end(), 1);</code></td></tr>
-                                    <tr><td><code>gcd</code></td><td>Greatest common divisor (C++17)</td><td><code>gcd(a, b)</code></td><td><code>int g = gcd(48, 18);</code></td></tr>
-                                    <tr><td><code>lcm</code></td><td>Least common multiple (C++17)</td><td><code>lcm(a, b)</code></td><td><code>int l = lcm(12, 18);</code></td></tr>
-                                </tbody>
-                            </table>
-                        </div></div>
-                    </section>
-                    <div class="note-card" style="margin-top: 2rem;">
-                        <p><strong>Key Algorithm Notes:</strong></p>
-                        <ul>
-                            <li><strong>Erase-Remove Idiom:</strong> <code>remove</code> and <code>remove_if</code> don't actually erase elements. Use <code>v.erase(remove(...), v.end())</code></li>
-                            <li><strong>Iterator Requirements:</strong> RandomAccess (vector, deque, array) > Bidirectional (list, set, map) > Forward (forward_list) > Input (all containers)</li>
-                            <li><strong>C++17 Features:</strong> <code>reduce</code>, <code>clamp</code>, <code>gcd</code>, <code>lcm</code>, and execution policies for parallel algorithms</li>
-                            <li><strong>C++20 Ranges:</strong> <code>ranges::sort</code>, <code>ranges::find</code>, etc. provide cleaner syntax and better composability</li>
-                            <li><strong>Performance:</strong> Prefer member functions over generic algorithms for associative containers (e.g., <code>set.find()</code> vs <code>find()</code>)</li>
-                        </ul>
-                    </div>
+                 <section id="numeric" class="content-section">
+                     <h3><span class="icon">${ICONS.numeric}</span>Numeric Algorithms</h3>
+                     <div class="card"><div class="table-wrapper">
+                         <table>
+                             <thead><tr><th>Algorithm</th><th>Purpose</th><th>Syntax</th><th>Example</th></tr></thead>
+                             <tbody>
+                                 <tr><td><code>accumulate</code></td><td>Compute sum or fold of range</td><td><code>accumulate(f, l, init [, op])</code></td><td><code>int sum = accumulate(v.begin(), v.end(), 0);</code></td></tr>
+                                 <tr><td><code>reduce</code></td><td>Parallel friendly reduction (C++17)</td><td><code>reduce(f, l [, init] [, op])</code></td><td><code>int sum = reduce(v.begin(), v.end());</code></td></tr>
+                                 <tr><td><code>inner_product</code></td><td>Compute inner product of ranges</td><td><code>inner_product(f1, l1, f2, init)</code></td><td><code>int dot = inner_product(v1.begin(), v1.end(), v2.begin(), 0);</code></td></tr>
+                                 <tr><td><code>partial_sum</code></td><td>Compute partial sums</td><td><code>partial_sum(first, last, dest)</code></td><td><code>partial_sum(v.begin(), v.end(), back_inserter(p));</code></td></tr>
+                                 <tr><td><code>iota</code></td><td>Fill range with successive increments</td><td><code>iota(first, last, value)</code></td><td><code>iota(v.begin(), v.end(), 1);</code></td></tr>
+                                 <tr><td><code>gcd</code></td><td>Greatest common divisor (C++17)</td><td><code>gcd(a, b)</code></td><td><code>int g = gcd(48, 18);</code></td></tr>
+                                 <tr><td><code>lcm</code></td><td>Least common multiple (C++17)</td><td><code>lcm(a, b)</code></td><td><code>int l = lcm(12, 18);</code></td></tr>
+                             </tbody>
+                         </table>
+                     </div></div>
+                 </section>
+                 <div class="note-card" style="margin-top: 2rem;">
+                     <p><strong>Key Algorithm Notes:</strong></p>
+                     <ul>
+                         <li><strong>Erase-Remove Idiom:</strong> <code>remove</code> and <code>remove_if</code> don't actually erase elements. Use <code>v.erase(remove(...), v.end())</code></li>
+                         <li><strong>Iterator Requirements:</strong> RandomAccess (vector, deque, array) > Bidirectional (list, set, map) > Forward (forward_list) > Input (all containers)</li>
+                         <li><strong>C++17 Features:</strong> <code>reduce</code>, <code>clamp</code>, <code>gcd</code>, <code>lcm</code>, and execution policies for parallel algorithms</li>
+                         <li><strong>C++20 Ranges:</strong> <code>ranges::sort</code>, <code>ranges::find</code>, etc. provide cleaner syntax and better composability</li>
+                         <li><strong>Performance:</strong> Prefer member functions over generic algorithms for associative containers (e.g., <code>set.find()</code> vs <code>find()</code>)</li>
+                     </ul>
+                 </div>
             `
         };
 
@@ -905,6 +913,9 @@
             const searchResults = document.getElementById('searchResults');
             const searchToggle = document.getElementById('searchToggle');
             const searchContainer = document.querySelector('.search-container');
+            const fullscreenToggle = document.getElementById('fullscreenToggle');
+            const fullscreenIconOpen = document.getElementById('fullscreenIconOpen');
+            const fullscreenIconClose = document.getElementById('fullscreenIconClose');
 
             let isMobile = window.innerWidth <= 1024;
 
@@ -937,6 +948,26 @@
                 e.stopPropagation();
                 searchContainer.classList.toggle('collapsed');
             });
+
+            fullscreenToggle.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            });
+            
+            document.addEventListener('fullscreenchange', () => {
+                if (document.fullscreenElement) {
+                    fullscreenIconOpen.style.display = 'none';
+                    fullscreenIconClose.style.display = 'block';
+                } else {
+                    fullscreenIconOpen.style.display = 'block';
+                    fullscreenIconClose.style.display = 'none';
+                }
+            });
             
             document.addEventListener('click', (e) => {
                 if (!searchBar.contains(e.target)) searchResults.style.display = 'none';
@@ -947,8 +978,8 @@
             
             sidebarNav.addEventListener('click', (e) => {
                 if (e.target.closest('a') && isMobile && !e.target.closest('a').href.includes('index.html')) {
-                    sidebar.classList.add('collapsed');
-                 }
+                     sidebar.classList.add('collapsed');
+                   }
             });
 
             searchBar.addEventListener('input', () => {
@@ -1003,4 +1034,3 @@
     </script>
 </body>
 </html>
-
