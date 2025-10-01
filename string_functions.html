@@ -416,6 +416,417 @@
                         </tbody>
                     </table>
                 </div>
+
+                <section style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px 20px; background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%); border-radius: 15px; margin: 20px 0;">
+    <style>
+        .cpp-reference-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #1e1e2e;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .cpp-reference-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 70px rgba(138, 43, 226, 0.4);
+        }
+
+        .cpp-ref-header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            transition: background 0.3s ease;
+        }
+
+        .cpp-ref-header:hover {
+            background: linear-gradient(135deg, #2575fc 0%, #6a11cb 100%);
+        }
+
+        .cpp-ref-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-top: 0;
+        }
+
+        .cpp-ref-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .cpp-ref-content {
+            padding: 40px;
+        }
+
+        .cpp-ref-section {
+            margin-bottom: 50px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #2d2d44;
+            transition: all 0.3s ease;
+            background: #252538;
+        }
+
+        .cpp-ref-section:hover {
+            border-color: #6a11cb;
+            box-shadow: 0 10px 30px rgba(106, 17, 203, 0.3);
+        }
+
+        .cpp-ref-section-title {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 20px 30px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .cpp-ref-section-title:hover {
+            background: linear-gradient(135deg, #2575fc 0%, #6a11cb 100%);
+            padding-left: 40px;
+        }
+
+        .cpp-ref-table-container {
+            overflow-x: auto;
+            padding: 20px;
+            background: #1e1e2e;
+        }
+
+        .cpp-ref-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #252538;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .cpp-ref-table thead {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+        }
+
+        .cpp-ref-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .cpp-ref-table th:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .cpp-ref-table td {
+            padding: 15px;
+            border-bottom: 1px solid #2d2d44;
+            transition: all 0.3s ease;
+            color: #e0e0e0;
+        }
+
+        .cpp-ref-table tr {
+            transition: all 0.3s ease;
+        }
+
+        .cpp-ref-table tbody tr:hover {
+            background: linear-gradient(to right, #2d2d44, #3a3a5c);
+            transform: scale(1.01);
+            box-shadow: 0 3px 10px rgba(106, 17, 203, 0.3);
+        }
+
+        .cpp-ref-code {
+            background: #2d2d44;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #ff79c6;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .cpp-ref-code:hover {
+            background: #3a3a5c;
+            color: #8be9fd;
+            transform: scale(1.05);
+        }
+
+        .cpp-ref-notes {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            border-left: 5px solid #fbbf24;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .cpp-ref-notes:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(251, 191, 36, 0.3);
+        }
+
+        .cpp-ref-notes h3 {
+            color: #fbbf24;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            margin-top: 0;
+        }
+
+        .cpp-ref-notes ul {
+            list-style-position: inside;
+            color: #e0e0e0;
+            line-height: 1.8;
+            margin: 0;
+            padding-left: 0;
+        }
+
+        .cpp-ref-notes li {
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            padding-left: 10px;
+        }
+
+        .cpp-ref-notes li:hover {
+            transform: translateX(5px);
+            color: #fbbf24;
+        }
+
+        .cpp-ref-footer {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            padding: 20px;
+            text-align: center;
+            font-style: italic;
+            transition: background 0.3s ease;
+        }
+
+        .cpp-ref-footer:hover {
+            background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
+        }
+
+        .cpp-ref-footer p {
+            margin: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .cpp-ref-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .cpp-ref-header p {
+                font-size: 0.9rem;
+            }
+
+            .cpp-ref-content {
+                padding: 20px;
+            }
+
+            .cpp-ref-section-title {
+                font-size: 1.4rem;
+                padding: 15px 20px;
+            }
+
+            .cpp-ref-table th, .cpp-ref-table td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            .cpp-ref-code {
+                font-size: 0.8rem;
+            }
+
+            .cpp-ref-table-container {
+                padding: 10px;
+            }
+
+            .cpp-ref-notes {
+                margin: 10px;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .cpp-ref-header h2 {
+                font-size: 1.4rem;
+            }
+
+            .cpp-ref-section-title {
+                font-size: 1.2rem;
+            }
+
+            .cpp-ref-table th, .cpp-ref-table td {
+                padding: 8px;
+                font-size: 0.8rem;
+            }
+
+            .cpp-ref-table {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+
+    <div class="cpp-reference-container">
+        <div class="cpp-ref-header">
+            <h2>C++ String Functions Reference</h2>
+            <p>Complete guide to character classification and string algorithms</p>
+        </div>
+
+        <div class="cpp-ref-content">
+            <!-- Character Classification Section -->
+            <div class="cpp-ref-section">
+                <div class="cpp-ref-section-title">Character Classification (cctype)</div>
+                <div class="cpp-ref-table-container">
+                    <table class="cpp-ref-table">
+                        <thead>
+                            <tr>
+                                <th>Function</th>
+                                <th>Syntax</th>
+                                <th>Description</th>
+                                <th>Example Usage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code class="cpp-ref-code">isalpha</code></td>
+                                <td><code class="cpp-ref-code">isalpha(c)</code></td>
+                                <td>Checks if alphabetic</td>
+                                <td><code class="cpp-ref-code">if (isalpha(ch)) { ... }</code></td>
+                            </tr>
+                            <tr>
+                                <td><code class="cpp-ref-code">isdigit</code></td>
+                                <td><code class="cpp-ref-code">isdigit(c)</code></td>
+                                <td>Checks if digit</td>
+                                <td><code class="cpp-ref-code">if (isdigit(ch)) { ... }</code></td>
+                            </tr>
+                            <tr>
+                                <td><code class="cpp-ref-code">isalnum</code></td>
+                                <td><code class="cpp-ref-code">isalnum(c)</code></td>
+                                <td>Checks if alphanumeric</td>
+                                <td><code class="cpp-ref-code">if (isalnum(ch)) { ... }</code></td>
+                            </tr>
+                            <tr>
+                                <td><code class="cpp-ref-code">isspace</code></td>
+                                <td><code class="cpp-ref-code">isspace(c)</code></td>
+                                <td>Checks if whitespace</td>
+                                <td><code class="cpp-ref-code">if (isspace(ch)) { ... }</code></td>
+                            </tr>
+                            <tr>
+                                <td><code class="cpp-ref-code">isupper</code></td>
+                                <td><code class="cpp-ref-code">isupper(c)</code></td>
+                                <td>Checks if uppercase</td>
+                                <td><code class="cpp-ref-code">if (isupper(ch)) { ... }</code></td>
+                            </tr>
+                            <tr>
+                                <td><code class="cpp-ref-code">islower</code></td>
+                                <td><code class="cpp-ref-code">islower(c)</code></td>
+                                <td>Checks if lowercase</td>
+                                <td><code class="cpp-ref-code">if (islower(ch)) { ... }</code></td>
+                            </tr>
+                            <tr>
+                                <td><code class="cpp-ref-code">ispunct</code></td>
+                                <td><code class="cpp-ref-code">ispunct(c)</code></td>
+                                <td>Checks if punctuation</td>
+                                <td><code class="cpp-ref-code">if (ispunct(ch)) { ... }</code></td>
+                            </tr>
+                            <tr>
+                                <td><code class="cpp-ref-code">toupper</code></td>
+                                <td><code class="cpp-ref-code">toupper(c)</code></td>
+                                <td>Converts to uppercase</td>
+                                <td><code class="cpp-ref-code">char upper = toupper(ch);</code></td>
+                            </tr>
+                            <tr>
+                                <td><code class="cpp-ref-code">tolower</code></td>
+                                <td><code class="cpp-ref-code">tolower(c)</code></td>
+                                <td>Converts to lowercase</td>
+                                <td><code class="cpp-ref-code">char lower = tolower(ch);</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- String Algorithms Section -->
+            <div class="cpp-ref-section">
+                <div class="cpp-ref-section-title">String Algorithms (algorithm)</div>
+                <div class="cpp-ref-table-container">
+                    <table class="cpp-ref-table">
+                        <thead>
+                            <tr>
+                                <th>Function</th>
+                                <th>Syntax</th>
+                                <th>Description</th>
+                                <th>Example Usage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code class="cpp-ref-code">transform</code></td>
+                                <td><code class="cpp-ref-code">transform(first, last, result, op)</code></td>
+                                <td>Applies function to range</td>
+                                <td><code class="cpp-ref-code">transform(s.begin(), s.end(), s.begin(), ::toupper);</code></td>
+                            </tr>
+                            <tr>
+                                <td><code class="cpp-ref-code">reverse</code></td>
+                                <td><code class="cpp-ref-code">reverse(first, last)</code></td>
+                                <td>Reverses range</td>
+                                <td><code class="cpp-ref-code">reverse(s.begin(), s.end());</code></td>
+                            </tr>
+                            <tr>
+                                <td><code class="cpp-ref-code">sort</code></td>
+                                <td><code class="cpp-ref-code">sort(first, last)</code></td>
+                                <td>Sorts range</td>
+                                <td><code class="cpp-ref-code">sort(s.begin(), s.end());</code></td>
+                            </tr>
+                            <tr>
+                                <td><code class="cpp-ref-code">find</code></td>
+                                <td><code class="cpp-ref-code">find(first, last, value)</code></td>
+                                <td>Finds value in range</td>
+                                <td><code class="cpp-ref-code">auto it = find(s.begin(), s.end(), 'x');</code></td>
+                            </tr>
+                            <tr>
+                                <td><code class="cpp-ref-code">count</code></td>
+                                <td><code class="cpp-ref-code">count(first, last, value)</code></td>
+                                <td>Counts occurrences</td>
+                                <td><code class="cpp-ref-code">int cnt = count(s.begin(), s.end(), 'a');</code></td>
+                            </tr>
+                            <tr>
+                                <td><code class="cpp-ref-code">replace</code></td>
+                                <td><code class="cpp-ref-code">replace(first, last, old_val, new_val)</code></td>
+                                <td>Replaces values</td>
+                                <td><code class="cpp-ref-code">replace(s.begin(), s.end(), 'a', 'A');</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Notes Section -->
+            <div class="cpp-ref-notes">
+                <h3>📝 Important Notes</h3>
+                <ul>
+                    <li>Many functions have multiple overloads not all shown here</li>
+                    <li>pos parameters often default to 0</li>
+                    <li>len parameters often default to string::npos (entire string)</li>
+                    <li>Iterator versions exist for many functions</li>
+                    <li>C++11 introduced many of the conversion functions (stoi, to_string, etc.)</li>
+                    <li>Always include appropriate headers: <code class="cpp-ref-code">&lt;string&gt;</code>, <code class="cpp-ref-code">&lt;cstring&gt;</code>, <code class="cpp-ref-code">&lt;sstream&gt;</code>, <code class="cpp-ref-code">&lt;cctype&gt;</code>, <code class="cpp-ref-code">&lt;algorithm&gt;</code></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="cpp-ref-footer">
+            <p>Quick Reference Guide for C++ String Operations</p>
+        </div>
+    </div>
+</section>
             </section>
         </main>
     </div>

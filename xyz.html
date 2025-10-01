@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Collections Cheat Sheet - Part 1</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background-color: #121212; color: #e0e0e0; margin:0; padding:0; }
+  header { padding:1rem; background-color:#1f1f1f; font-size:1.5rem; }
+  #content { padding:1rem; }
+  section { margin-bottom:2rem; }
+  table { width:100%; border-collapse:collapse; margin-top:0.5rem; }
+  th, td { border:1px solid #333; padding:0.5rem; text-align:left; }
+  th { background:#222; }
+  pre.code { background:#1b1b1b; padding:0.5rem; overflow-x:auto; }
+  .lead { font-weight:bold; margin-bottom:0.5rem; }
+  .subnote { font-size:0.9rem; margin-bottom:0.3rem; color:#aaa; }
+  .muted-block { font-size:0.9rem; color:#888; margin-top:0.3rem; }
+</style>
+</head>
+<body>
+<header>Java Collections Cheat Sheet - Minimal Dark Theme</header>
+<div id="content">
+
+<!-- PART 1: List Implementations -->
+<section id="arraylist">
+<h2>ArrayList — Definition & Backend</h2>
+<p class="lead">Resizable-array implementation of the List interface. Provides fast random access and amortized constant-time appends.</p>
+<div class="subnote"><strong>Backend/Implementation:</strong> Array-backed dynamic array (Object[]). Resizes by ~1.5x when capacity exceeded. Elements stored in contiguous array slots. Shifts via System.arraycopy during insert/remove.</div>
+<div class="muted-block">Additional notes: Allows nulls. Not synchronized. Good for random access; poor at mid-list insert/removes.</div>
+<table>
+<thead><tr><th>Method</th><th>Syntax</th><th>Description</th><th>Complexity</th></tr></thead>
+<tbody>
+<tr><td>Constructor</td><td>ArrayList&lt;E&gt; list = new ArrayList&lt;&gt;()</td><td>Creates empty list with default capacity.</td><td>N/A</td></tr>
+<tr><td>add(E)</td><td>boolean add(E e)</td><td>Appends element; resizes if needed.</td><td>O(1) amortized</td></tr>
+<tr><td>add(int,E)</td><td>void add(int index, E e)</td><td>Insert at position; shifts elements.</td><td>O(n)</td></tr>
+<tr><td>get(int)</td><td>E get(int index)</td><td>Return element at index.</td><td>O(1)</td></tr>
+<tr><td>set(int,E)</td><td>E set(int index, E element)</td><td>Replace element; returns old value.</td><td>O(1)</td></tr>
+<tr><td>remove(int)</td><td>E remove(int index)</td><td>Remove element; shifts tail.</td><td>O(n)</td></tr>
+<tr><td>remove(Object)</td><td>boolean remove(Object o)</td><td>Remove first occurrence.</td><td>O(n)</td></tr>
+<tr><td>size()</td><td>int size()</td><td>Number of elements stored.</td><td>O(1)</td></tr>
+<tr><td>ensureCapacity</td><td>void ensureCapacity(int minCapacity)</td><td>Increase capacity to avoid resizing.</td><td>O(n)</td></tr>
+<tr><td>trimToSize</td><td>void trimToSize()</td><td>Reduce backing array to current size.</td><td>O(n)</td></tr>
+</tbody>
+</table>
+<pre class="code">ArrayList&lt;String&gt; a = new ArrayList&lt;&gt;();
+a.add("x");
+String s = a.get(0);</pre>
+</section>
+
+<section id="linkedlist">
+<h2>LinkedList — Definition & Backend</h2>
+<p class="lead">Doubly-linked list implementing List and Deque. Efficient insertion/removal at ends; poor random access.</p>
+<div class="subnote"><strong>Backend/Implementation:</strong> Doubly-linked nodes with references to previous and next. Each node stores element and links. Traversal from nearest end. get(index) traverses O(n).</div>
+<div class="muted-block">Implements Queue/Deque methods. Iteration cost O(n).</div>
+<table>
+<thead><tr><th>Method</th><th>Syntax</th><th>Description</th><th>Complexity</th></tr></thead>
+<tbody>
+<tr><td>Constructor</td><td>LinkedList&lt;E&gt; lst = new LinkedList&lt;&gt;()</td><td>Create empty list.</td><td>N/A</td></tr>
+<tr><td>add(E)</td><td>boolean add(E e)</td><td>Append at tail.</td><td>O(1)</td></tr>
+<tr><td>addFirst</td><td>void addFirst(E e)</td><td>Insert at head.</td><td>O(1)</td></tr>
+<tr><td>addLast</td><td>void addLast(E e)</td><td>Insert at tail.</td><td>O(1)</td></tr>
+<tr><td>get(int)</td><td>E get(int index)</td><td>Traverse from head/tail to index.</td><td>O(n)</td></tr>
+<tr><td>remove()</td><td>E remove()</td><td>Remove head.</td><td>O(1)</td></tr>
+<tr><td>remove(Object)</td><td>boolean remove(Object o)</td><td>Remove first matching element.</td><td>O(n)</td></tr>
+<tr><td>iterator()</td><td>Iterator&lt;E&gt; iterator()</td><td>Fail-fast iterator.</td><td>O(1)</td></tr>
+</tbody>
+</table>
+<pre class="code">LinkedList&lt;Integer&gt; q = new LinkedList&lt;&gt;();
+q.add(5);
+int x = q.remove();</pre>
+</section>
+
+<!-- PART 2: Vector, Stack, HashMap, TreeMap -->
+<section id="vector">
+<h2>Vector — Definition & Backend</h2>
+<p class="lead">Resizable-array implementation, synchronized. Legacy, thread-safe alternative to ArrayList.</p>
+<div class="subnote"><strong>Backend/Implementation:</strong> Array-backed (Object[]), resizes by doubling capacity. Synchronized on all methods.</div>
+<div class="muted-block">Slower than ArrayList due to synchronization. Use only when thread-safety is required.</div>
+<table>
+<thead><tr><th>Method</th><th>Syntax</th><th>Description</th><th>Complexity</th></tr></thead>
+<tbody>
+<tr><td>Constructor</td><td>Vector&lt;E&gt; v = new Vector&lt;&gt;()</td><td>Create empty vector.</td><td>N/A</td></tr>
+<tr><td>add(E)</td><td>boolean add(E e)</td><td>Append element.</td><td>O(1) amortized</td></tr>
+<tr><td>add(int,E)</td><td>void add(int index, E e)</td><td>Insert at position.</td><td>O(n)</td></tr>
+<tr><td>get(int)</td><td>E get(int index)</td><td>Retrieve element at index.</td><td>O(1)</td></tr>
+<tr><td>remove(int)</td><td>E remove(int index)</td><td>Remove element at index.</td><td>O(n)</td></tr>
+<tr><td>size()</td><td>int size()</td><td>Number of elements.</td><td>O(1)</td></tr>
+</tbody>
+</table>
+<pre class="code">Vector&lt;String&gt; vec = new Vector&lt;&gt;();
+vec.add("x");
+String val = vec.get(0);</pre>
+</section>
+
+<section id="stack">
+<h2>Stack — Definition & Backend</h2>
+<p class="lead">Legacy class extending Vector. LIFO structure.</p>
+<div class="subnote"><strong>Backend/Implementation:</strong> Extends Vector; synchronized methods. Push/Pop operate on top (end) of vector.</div>
+<div class="muted-block">Use Deque (ArrayDeque) for modern code instead.</div>
+<table>
+<thead><tr><th>Method</th><th>Syntax</th><th>Description</th><th>Complexity</th></tr></thead>
+<tbody>
+<tr><td>push</td><td>E push(E item)</td><td>Push element onto stack.</td><td>O(1) amortized</td></tr>
+<tr><td>pop</td><td>E pop()</td><td>Remove and return top element.</td><td>O(1)</td></tr>
+<tr><td>peek</td><td>E peek()</td><td>Look at top element without removal.</td><td>O(1)</td></tr>
+<tr><td>empty</td><td>boolean empty()</td><td>Check if stack is empty.</td><td>O(1)</td></tr>
+<tr><td>search</td><td>int search(Object o)</td><td>Return 1-based position from top; -1 if not found.</td><td>O(n)</td></tr>
+</tbody>
+</table>
+<pre class="code">Stack&lt;Integer&gt; st = new Stack&lt;&gt;();
+st.push(5);
+int top = st.pop();</pre>
+</section>
+
+<section id="hashmap">
+<h2>HashMap — Definition & Backend</h2>
+<p class="lead">Hash table based Map. Allows one null key and multiple null values.</p>
+<div class="subnote"><strong>Backend/Implementation:</strong> Array of Node&lt;K,V&gt; buckets. Buckets are linked lists or red-black trees when collisions exceed threshold. Hash(key) determines bucket; resize doubles capacity. Load factor default 0.75. Treeify threshold 8.</div>
+<div class="muted-block">Not synchronized. Iterators are fail-fast.</div>
+<table>
+<thead><tr><th>Method</th><th>Syntax</th><th>Description</th><th>Complexity</th></tr></thead>
+<tbody>
+<tr><td>put</td><td>V put(K key, V value)</td><td>Associate key with value.</td><td>O(1) avg, O(log n) worst</td></tr>
+<tr><td>get</td><td>V get(Object key)</td><td>Retrieve value by key.</td><td>O(1) avg, O(log n) worst</td></tr>
+<tr><td>remove</td><td>V remove(Object key)</td><td>Remove mapping for key.</td><td>O(1) avg</td></tr>
+<tr><td>containsKey</td><td>boolean containsKey(Object key)</td><td>Check if key exists.</td><td>O(1) avg</td></tr>
+<tr><td>keySet</td><td>Set&lt;K&gt; keySet()</td><td>Return set view of keys.</td><td>O(1)</td></tr>
+<tr><td>values</td><td>Collection&lt;V&gt; values()</td><td>Return collection view of values.</td><td>O(n)</td></tr>
+<tr><td>entrySet</td><td>Set&lt;Map.Entry&lt;K,V&gt;&gt; entrySet()</td><td>Return set view of key-value pairs.</td><td>O(n)</td></tr>
+</tbody>
+</table>
+<pre class="code">HashMap&lt;String,Integer&gt; map = new HashMap&lt;&gt;();
+map.put("a",1);
+int val = map.get("a");</pre>
+</section>
+
+<section id="treemap">
+<h2>TreeMap — Definition & Backend</h2>
+<p class="lead">Red-Black tree based Map. Keys sorted naturally or via Comparator.</p>
+<div class="subnote"><strong>Backend/Implementation:</strong> Red-Black tree nodes storing key, value, left, right, parent, and color. Supports sorted traversal, ceiling/floor operations, and submaps.</div>
+<div class="muted-block">Not synchronized. Iterators are fail-fast.</div>
+<table>
+<thead><tr><th>Method</th><th>Syntax</th><th>Description</th><th>Complexity</th></tr></thead>
+<tbody>
+<tr><td>put</td><td>V put(K key, V value)</td><td>Insert or update key-value pair.</td><td>O(log n)</td></tr>
+<tr><td>get</td><td>V get(Object key)</td><td>Retrieve value for key.</td><td>O(log n)</td></tr>
+<tr><td>remove</td><td>V remove(Object key)</td><td>Remove mapping for key.</td><td>O(log n)</td></tr>
+<tr><td>firstKey</td><td>K firstKey()</td><td>Return smallest key.</td><td>O(log n)</td></tr>
+<tr><td>lastKey</td><td>K lastKey()</td><td>Return largest key.</td><td>O(log n)</td></tr>
+<tr><td>subMap</td><td>SortedMap&lt;K,V&gt; subMap(K fromKey, K toKey)</td><td>Return view of keys in range.</td><td>O(log n)</td></tr>
+</tbody>
+</table>
+<pre class="code">TreeMap&lt;String,Integer&gt; tmap = new TreeMap&lt;&gt;();
+tmap.put("a",1);
+int val = tmap.get("a");</pre>
+</section>
+
+<!-- PART 3: Sets and Queues -->
+<section id="hashset">
+<h2>HashSet — Definition & Backend</h2>
+<p class="lead">Implements Set using a HashMap internally. Stores unique elements.</p>
+<div class="subnote"><strong>Backend/Implementation:</strong> Backed by HashMap&lt;E,Object&gt;. Uses hashing to store elements in buckets. Load factor 0.75. Treeify threshold 8.</div>
+<div class="muted-block">Not synchronized. Allows null element.</div>
+<table>
+<thead><tr><th>Method</th><th>Syntax</th><th>Description</th><th>Complexity</th></tr></thead>
+<tbody>
+<tr><td>add</td><td>boolean add(E e)</td><td>Add element if not present.</td><td>O(1) avg, O(log n) worst</td></tr>
+<tr><td>remove</td><td>boolean remove(Object o)</td><td>Remove element if present.</td><td>O(1) avg</td></tr>
+<tr><td>contains</td><td>boolean contains(Object o)</td><td>Check if element exists.</td><td>O(1) avg</td></tr>
+<tr><td>size</td><td>int size()</td><td>Number of elements.</td><td>O(1)</td></tr>
+</tbody>
+</table>
+<pre class="code">HashSet&lt;String&gt; set = new HashSet&lt;&gt;();
+set.add("x");
+boolean exists = set.contains("x");</pre>
+</section>
+
+<section id="treeset">
+<h2>TreeSet — Definition & Backend</h2>
+<p class="lead">Sorted set implementation using a Red-Black tree.</p>
+<div class="subnote"><strong>Backend/Implementation:</strong> Red-Black tree storing elements in sorted order. Supports navigation, range views.</div>
+<div class="muted-block">Not synchronized.</div>
+<table>
+<thead><tr><th>Method</th><th>Syntax</th><th>Description</th><th>Complexity</th></tr></thead>
+<tbody>
+<tr><td>add</td><td>boolean add(E e)</td><td>Add element in sorted order.</td><td>O(log n)</td></tr>
+<tr><td>remove</td><td>boolean remove(Object o)</td><td>Remove element.</td><td>O(log n)</td></tr>
+<tr><td>contains</td><td>boolean contains(Object o)</td><td>Check existence.</td><td>O(log n)</td></tr>
+<tr><td>first</td><td>E first()</td><td>Return smallest element.</td><td>O(log n)</td></tr>
+<tr><td>last</td><td>E last()</td><td>Return largest element.</td><td>O(log n)</td></tr>
+</tbody>
+</table>
+<pre class="code">TreeSet&lt;Integer&gt; ts = new TreeSet&lt;&gt;();
+ts.add(10);
+int first = ts.first();</pre>
+</section>
+
+<section id="linkedhashset">
+<h2>LinkedHashSet — Definition & Backend</h2>
+<p class="lead">Hash table with linked list to preserve insertion order.</p>
+<div class="subnote"><strong>Backend/Implementation:</strong> HashMap with doubly-linked list running through entries.</div>
+<div class="muted-block">Not synchronized. Allows null.</div>
+<table>
+<thead><tr><th>Method</th><th>Syntax</th><th>Description</th><th>Complexity</th></tr></thead>
+<tbody>
+<tr><td>add</td><td>boolean add(E e)</td><td>Add element if not present, preserve insertion order.</td><td>O(1) avg</td></tr>
+<tr><td>remove</td><td>boolean remove(Object o)</td><td>Remove element.</td><td>O(1) avg</td></tr>
+<tr><td>contains</td><td>boolean contains(Object o)</td><td>Check if element exists.</td><td>O(1) avg</td></tr>
+<tr><td>size</td><td>int size()</td><td>Number of elements.</td><td>O(1)</td></tr>
+</tbody>
+</table>
+<pre class="code">LinkedHashSet&lt;String&gt; lhs = new LinkedHashSet&lt;&gt;();
+lhs.add("x");
+lhs.contains("x");</pre>
+</section>
+
+<section id="arraydeque">
+<h2>ArrayDeque — Definition & Backend</h2>
+<p class="lead">Resizable array implementing Deque interface. Allows insertion/removal at both ends.</p>
+<div class="subnote"><strong>Backend/Implementation:</strong> Circular array. Head/tail pointers. Resizes dynamically.</div>
+<div class="muted-block">Not thread-safe. No capacity restrictions except memory.</div>
+<table>
+<thead><tr><th>Method</th><th>Syntax</th><th>Description</th><th>Complexity</th></tr></thead>
+<tbody>
+<tr><td>addFirst</td><td>void addFirst(E e)</td><td>Add element at front.</td><td>O(1) amortized</td></tr>
+<tr><td>addLast</td><td>void addLast(E e)</td><td>Add element at end.</td><td>O(1) amortized</td></tr>
+<tr><td>removeFirst</td><td>E removeFirst()</td><td>Remove front element.</td><td>O(1)</td></tr>
+<tr><td>removeLast</td><td>E removeLast()</td><td>Remove last element.</td><td>O(1)</td></tr>
+<tr><td>peekFirst</td><td>E peekFirst()</td><td>Get front element.</td><td>O(1)</td></tr>
+<tr><td>peekLast</td><td>E peekLast()</td><td>Get last element.</td><td>O(1)</td></tr>
+</tbody>
+</table>
+<pre class="code">ArrayDeque&lt;Integer&gt; dq = new ArrayDeque&lt;&gt;();
+dq.addFirst(1);
+dq.addLast(2);
+int first = dq.peekFirst();</pre>
+</section>
+
+<section id="priorityqueue">
+<h2>PriorityQueue — Definition & Backend</h2>
+<p class="lead">Heap-based queue implementing Queue interface. Elements ordered by natural ordering or Comparator.</p>
+<div class="subnote"><strong>Backend/Implementation:</strong> Binary heap stored in array. Maintains heap invariant on insertion/removal.</div>
+<div class="muted-block">Not synchronized. Nulls not allowed.</div>
+<table>
+<thead><tr><th>Method</th><th>Syntax</th><th>Description</th><th>Complexity</th></tr></thead>
+<tbody>
+<tr><td>add / offer</td><td>boolean add(E e)</td><td>Insert element.</td><td>O(log n)</td></tr>
+<tr><td>poll</td><td>E poll()</td><td>Remove and return smallest element.</td><td>O(log n)</td></tr>
+<tr><td>peek</td><td>E peek()</td><td>Return smallest element without removal.</td><td>O(1)</td></tr>
+<tr><td>remove</td><td>boolean remove(Object o)</td><td>Remove specific element.</td><td>O(n)</td></tr>
+<tr><td>size</td><td>int size()</td><td>Number of elements.</td><td>O(1)</td></tr>
+</tbody>
+</table>
+<pre class="code">PriorityQueue&lt;Integer&gt; pq = new PriorityQueue&lt;&gt;();
+pq.add(5);
+pq.add(1);
+int min = pq.poll();</pre>
+</section>
+
+
+</div>
+</body>
+</html>
